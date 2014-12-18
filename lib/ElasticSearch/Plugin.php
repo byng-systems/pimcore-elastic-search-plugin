@@ -31,7 +31,12 @@ class ElasticSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcor
                 // We do not want to index snippets.
                 if ($document instanceof \Document_Page) {
 
-                    $pageRepository->save($document);
+                    // Index only published documents.
+                    if ($document->isPublished()) {
+
+                        $pageRepository->save($document);
+
+                    }
 
                 }
             }
