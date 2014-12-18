@@ -56,6 +56,12 @@ class PageRepository
             'type' => $this->type
         );
 
+        if (! $this->exists($document)) {
+
+            return false;
+
+        }
+
         return $this->client->delete($params);
     }
 

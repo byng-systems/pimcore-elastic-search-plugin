@@ -36,6 +36,12 @@ class ElasticSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcor
 
                         $pageRepository->save($document);
 
+
+                    } else {
+
+                        // When un-publishing a document remove it from the index.
+                        $pageRepository->delete($document);
+
                     }
 
                 }
