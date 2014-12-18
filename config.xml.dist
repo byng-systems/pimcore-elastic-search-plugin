@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<configdata>
+    <hosts>
+        <host>127.0.0.1:9200</host>
+    </hosts>
+    <index>pimcore</index>
+    <type>page</type>
+</configdata>
