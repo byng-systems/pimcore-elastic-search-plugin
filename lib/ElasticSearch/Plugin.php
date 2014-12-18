@@ -9,6 +9,7 @@
 
 use ElasticSearch\ConfigDistFilePath;
 use ElasticSearch\ConfigFilePath;
+use ElasticSearch\EventManager as DocumentEventManager;
 use ElasticSearch\PageRepositoryFactory;
 
 class ElasticSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore_API_Plugin_Interface
@@ -20,33 +21,13 @@ class ElasticSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcor
         $indexFactory = new PageRepositoryFactory();
         $pageRepository = $indexFactory->build($config);
 
-        // Hook into document update event.
-        Pimcore::getEventManager()->attach(
-            'document.postUpdate',
-            function ($event) use ($pageRepository) {
-
-                /** @var \Document_Page $document */
-                $document = $event->getTarget();
-
-                // We do not want to index snippets.
-                if ($document instanceof \Document_Page) {
-
-                    // Index only published documents.
-                    if ($document->isPublished()) {
-
-                        $pageRepository->save($document);
-
-
-                    } else {
-
-                        // When un-publishing a document remove it from the index.
-                        $pageRepository->delete($document);
-
-                    }
-
-                }
-            }
+        $documentEventManager = new DocumentEventManager(
+            Pimcore::getEventManager(),
+            $pageRepository
         );
+
+        $documentEventManager->attachPostDelete();
+        $documentEventManager->attachPostUpdate();
     }
 
     public static function install()
