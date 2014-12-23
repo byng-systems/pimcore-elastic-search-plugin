@@ -105,6 +105,15 @@ class PageRepository
         /** @var \Document_Tag $element */
         foreach ($document->getElements() as $key => $element) {
 
+            if (
+                // Skip processing an empty snippet.
+                ! $element->getData() ||
+                // Image tag would return an array of properties
+                ! is_string($element->getData())
+            ) {
+                continue;
+            }
+
             $body['doc'][$key] = $this->htmlToTextFilter->convert($element->getData());
 
         }
@@ -113,7 +122,8 @@ class PageRepository
             'id' => $document->getId(),
             'body' => $body,
             'index' => $this->index,
-            'type' => $this->type
+            'type' => $this->type,
+            'timestamp' => $document->getModificationDate()
         );
     }
 }

@@ -2,7 +2,7 @@
 /**
  *
  * @author      Michal Maszkiewicz
- * @package     
+ * @package     Elastic Search Plugin
  */
 
 namespace ElasticSearch;
