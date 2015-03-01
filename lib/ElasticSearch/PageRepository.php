@@ -95,6 +95,41 @@ class PageRepository
     }
 
     /**
+     * Finds documents by text
+     *
+     * @param $text
+     * @return array
+     */
+    public function find($text)
+    {
+        $text = (string) $text;
+
+        $params = array(
+            'index' => $this->index,
+            'type' => $this->type,
+        );
+
+        $params['body']['query']['match']['_all'] = $text;
+
+        $result = $this->client->search($params);
+
+        $documents = array();
+
+        if (! isset($result['hits']['hits'])) {
+            return array();
+        }
+
+        // Fetch list of documents based on results from Elastic Search
+        // TODO optimize to use list
+        foreach ($result['hits']['hits'] as $page) {
+            $id = (int) $page['_id'];
+            $documents[] = \Document_Page::getById($id);
+        }
+
+        return $documents;
+    }
+
+    /**
      * @param \Document_Page $document
      * @return array
      */
