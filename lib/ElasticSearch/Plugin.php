@@ -18,8 +18,8 @@ class ElasticSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcor
     public function init()
     {
         $config = new Zend_Config_Xml(new ConfigFilePath());
-        $indexFactory = new PageRepositoryFactory();
-        $pageRepository = $indexFactory->build($config);
+        $repositoryFactory = new PageRepositoryFactory();
+        $pageRepository = $repositoryFactory->build($config);
 
         $documentEventManager = new DocumentEventManager(
             Pimcore::getEventManager(),
