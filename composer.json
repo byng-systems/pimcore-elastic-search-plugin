@@ -1,5 +1,5 @@
 {
-  "name": "pimcore/elastic-search-plugin",
+  "name": "pimcore/elastic-search",
   "type": "pimcore-plugin",
   "license": "BSD-3-Clause",
   "description": "Elastic Search Pimcore plugin",
