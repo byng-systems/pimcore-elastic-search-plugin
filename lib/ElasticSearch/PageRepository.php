@@ -7,6 +7,10 @@
 
 namespace ElasticSearch;
 
+use Document_Page;
+use Document_Tag;
+use Elasticsearch\Client;
+use InvalidArgumentException;
 use NF\HtmlToText;
 
 class PageRepository
@@ -31,11 +35,11 @@ class PageRepository
     public function __construct(array $configuration, Client $client, HtmlToText $htmlToTextFilter)
     {
         if (! isset($configuration['index'])) {
-            throw new \InvalidArgumentException('Missing configuration setting: index');
+            throw new InvalidArgumentException('Missing configuration setting: index');
         }
 
         if (! isset($configuration['type'])) {
-            throw new \InvalidArgumentException('Missing configuration setting: type');
+            throw new InvalidArgumentException('Missing configuration setting: type');
         }
 
         $this->index = (string) $configuration['index'];
@@ -45,10 +49,10 @@ class PageRepository
     }
 
     /**
-     * @param \Document_Page $document
+     * @param Document_Page $document
      * @return array
      */
-    public function delete(\Document_Page $document)
+    public function delete(Document_Page $document)
     {
         $params = array(
             'id' => $document->getId(),
@@ -66,9 +70,9 @@ class PageRepository
     }
 
     /**
-     * @param \Document_Page $document
+     * @param Document_Page $document
      */
-    public function save(\Document_Page $document)
+    public function save(Document_Page $document)
     {
         $params = $this->pageToArray($document);
 
@@ -80,10 +84,10 @@ class PageRepository
     }
 
     /**
-     * @param \Document_Page $document
+     * @param Document_Page $document
      * @return array
      */
-    public function exists(\Document_Page $document)
+    public function exists(Document_Page $document)
     {
         $params = array(
             'id' => $document->getId(),
@@ -97,19 +101,21 @@ class PageRepository
     /**
      * Finds documents by text
      *
-     * @param $text
+     * @param string $text
+     * @param array $filters
      * @return array
      */
-    public function find($text)
+    public function find($text, array $filters = [])
     {
-        $text = (string) $text;
-
-        $params = array(
+        $params = [
             'index' => $this->index,
             'type' => $this->type,
-        );
-
-        $params['body']['query']['match']['_all'] = $text;
+            'body' => ['query' => ['match' => []]]
+        ];
+        
+        $params['body']['query']['match']['_all'] = [
+            'query'     =>  (string) $text
+        ];
 
         $result = $this->client->search($params);
 
@@ -123,21 +129,21 @@ class PageRepository
         // TODO optimize to use list
         foreach ($result['hits']['hits'] as $page) {
             $id = (int) $page['_id'];
-            $documents[] = \Document_Page::getById($id);
+            $documents[] = Document_Page::getById($id);
         }
 
         return $documents;
     }
 
     /**
-     * @param \Document_Page $document
+     * @param Document_Page $document
      * @return array
      */
-    protected function pageToArray(\Document_Page $document)
+    protected function pageToArray(Document_Page $document)
     {
         $body = array();
 
-        /** @var \Document_Tag $element */
+        /** @var Document_Tag $element */
         foreach ($document->getElements() as $key => $element) {
 
             if (
