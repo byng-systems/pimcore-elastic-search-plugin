@@ -1,39 +1,67 @@
 <?php
+
 /**
  *
  * @author      Michal Maszkiewicz
  * @package     
  */
 
-namespace ElasticSearch;
+namespace ElasticSearch\Repository;
 
 use Document_Page;
-use Document_Tag;
 use Elasticsearch\Client;
+use ElasticSearch\Processor\Page\PageProcessor;
 use InvalidArgumentException;
 use NF\HtmlToText;
 
+
+
 class PageRepository
 {
-    /** @var string */
+    /**
+     * 
+     * @var string
+     */
     protected $index;
 
-    /** @var string */
+    /**
+     * 
+     * @var string
+     */
     protected $type;
 
-    /** @var Client */
+    /**
+     * 
+     * @var Client
+     */
     protected $client;
 
-    /** @var HtmlToText  */
+    /**
+     * 
+     * @var HtmlToText
+     */
     protected $htmlToTextFilter;
+    
+    /**
+     *
+     * @var PageProcessor 
+     */
+    protected $processor;
+    
+    
 
     /**
      * @param $configuration
      * @param Client $client
      * @param $htmlToTextFilter
+     * @param PageProcessor $processor
      */
-    public function __construct(array $configuration, Client $client, HtmlToText $htmlToTextFilter)
-    {
+    public function __construct(
+        array $configuration,
+        Client $client,
+        HtmlToText $htmlToTextFilter,
+        PageProcessor $processor
+    ) {
         if (! isset($configuration['index'])) {
             throw new InvalidArgumentException('Missing configuration setting: index');
         }
@@ -46,6 +74,7 @@ class PageRepository
         $this->type = (string) $configuration['type'];
         $this->client = $client;
         $this->htmlToTextFilter = $htmlToTextFilter;
+        $this->processor = $processor;
     }
 
     /**
@@ -99,40 +128,78 @@ class PageRepository
     }
 
     /**
-     * Finds documents by text
-     *
-     * @param string $text
-     * @param array $filters
-     * @return array
+     * 
+     * @param array $mustCriteria
+     * @param array $shouldCriteria
+     * @param array $mustNotCriteria
+     * @return Document_Page[]
      */
-    public function find($text, array $filters = [])
-    {
-        $params = [
+    public function findBy(
+        array $mustCriteria = [],
+        array $shouldCriteria = [],
+        array $mustNotCriteria = []
+    ) {
+        $result = $this->client->search([
             'index' => $this->index,
             'type' => $this->type,
-            'body' => ['query' => ['match' => []]]
-        ];
-        
-        $params['body']['query']['match']['_all'] = [
-            'query'     =>  (string) $text
-        ];
+            'body' => [
+                'query' => [
+                    'bool' => [
+                        'must' => $mustCriteria,
+                        'should' => $shouldCriteria,
+                        'must_not' => $mustNotCriteria
+                    ]
+                ]
+            ]
+        ]);
 
-        $result = $this->client->search($params);
+        $documents = [];
 
-        $documents = array();
-
-        if (! isset($result['hits']['hits'])) {
-            return array();
+        if (!isset($result['hits']['hits'])) {
+            return [];
         }
 
         // Fetch list of documents based on results from Elastic Search
         // TODO optimize to use list
         foreach ($result['hits']['hits'] as $page) {
             $id = (int) $page['_id'];
-            $documents[] = Document_Page::getById($id);
+            
+            if (($document = Document_Page::getById($id)) instanceof Document_Page) {
+                $documents[] = $document;
+            }
         }
 
         return $documents;
+    }
+    
+    /**
+     * Finds documents by text
+     *
+     * @param string $text
+     * @param array $filters
+     * @param array $terms
+     * @return Document_Page[]
+     */
+    public function find($text, array $filters = [], array $terms = [])
+    {
+        $mustCriteria = [];
+        
+        if (!empty($text)) {
+            $mustCriteria[]['match']['_all'] = ['query' => (string) $text];
+        }
+        
+        foreach ($filters as $name => $term) {
+            $mustCriteria[]['match'][$name] = ['query' => (string) $term];
+        }
+        
+        foreach ($terms as $name => $term) {
+            $mustCriteria[]['terms'] = [
+                $name => [str_replace(' ', '_', strtolower($term))],
+                'minimum_should_match' => 1
+            ];
+        }
+        
+        return $this->findBy($mustCriteria);
     }
 
     /**
@@ -141,30 +208,13 @@ class PageRepository
      */
     protected function pageToArray(Document_Page $document)
     {
-        $body = array();
-
-        /** @var Document_Tag $element */
-        foreach ($document->getElements() as $key => $element) {
-
-            if (
-                // Skip processing an empty snippet.
-                ! $element->getData() ||
-                // Image tag would return an array of properties
-                ! is_string($element->getData())
-            ) {
-                continue;
-            }
-
-            $body['doc'][$key] = $this->htmlToTextFilter->convert($element->getData());
-
-        }
-
-        return array(
+        return [
             'id' => $document->getId(),
-            'body' => $body,
+            'body' => ['doc' => $this->processor->processPage($document)],
             'index' => $this->index,
             'type' => $this->type,
             'timestamp' => $document->getModificationDate()
-        );
+        ];
     }
+    
 }

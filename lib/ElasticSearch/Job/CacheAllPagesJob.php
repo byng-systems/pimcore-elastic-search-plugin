@@ -6,9 +6,15 @@
  * and open the template in the editor.
  */
 
-namespace ElasticSearch;
+namespace ElasticSearch\Job;
 
+use Document;
 use Document_Page;
+use ElasticSearch\Repository\PageRepository;
+use Exception;
+use Logger;
+
+
 
 /**
  * Description of CacheAllPagesJob
@@ -20,7 +26,7 @@ class CacheAllPagesJob
     
     /**
      *
-     * @var type 
+     * @var PageRepository 
      */
     protected $pageRepository;
     
@@ -42,9 +48,24 @@ class CacheAllPagesJob
     {
         foreach (Document_Page::getList() as $document) {
             if ($document instanceof Document_Page) {
-                $this->pageRepository->save($document);
+                $this->rebuildDocumentCache($document);
             }
         }
+    }
+    
+    /**
+     * 
+     * @param Document_Page $document
+     */
+    protected function rebuildDocumentCache(Document_Page $document)
+    {
+        try {
+            $this->pageRepository->save($document);
+        } catch (Exception $ex) {
+            Logger::error("Failed to update document with ID: " . $document->getId());
+            Logger::error($ex->getMessage());
+        }
+        
     }
     
 }

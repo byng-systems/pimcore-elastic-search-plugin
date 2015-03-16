@@ -7,11 +7,13 @@
  * @package     Elastic Search Plugin
  */
 
-use ElasticSearch\CacheAllPagesJob;
-use ElasticSearch\ConfigDistFilePath;
-use ElasticSearch\ConfigFilePath;
-use ElasticSearch\EventManager as DocumentEventManager;
-use ElasticSearch\PageRepositoryFactory;
+use ElasticSearch\Event\EventManager as DocumentEventManager;
+use ElasticSearch\Job\CacheAllPagesJob;
+use ElasticSearch\PluginConfig\ConfigDistFilePath;
+use ElasticSearch\PluginConfig\ConfigFilePath;
+use ElasticSearch\Repository\PageRepositoryFactory;
+
+
 
 class ElasticSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore_API_Plugin_Interface
 {

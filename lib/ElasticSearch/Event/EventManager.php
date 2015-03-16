@@ -5,10 +5,12 @@
  * @package     Elastic Search Plugin
  */
 
-namespace ElasticSearch;
+namespace ElasticSearch\Event;
 
 use Closure;
 use Document_Page;
+use ElasticSearch\Job\CacheAllPagesJob;
+use ElasticSearch\Repository\PageRepository;
 use Schedule_Maintenance_Job;
 use Schedule_Manager_Procedural;
 use Zend_EventManager_Event as Event;
