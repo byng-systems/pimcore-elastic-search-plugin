@@ -58,7 +58,7 @@ class ElementProcessor
             );
         }
         
-        return $elementData;
+        return $this->htmlToTextFilter->convert($elementData);
     }
     
 }
