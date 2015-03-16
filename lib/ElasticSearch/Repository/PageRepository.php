@@ -10,6 +10,7 @@ namespace ElasticSearch\Repository;
 
 use Document_Page;
 use Elasticsearch\Client;
+use ElasticSearch\Filter\FilterInterface;
 use ElasticSearch\Processor\Page\PageProcessor;
 use InvalidArgumentException;
 use NF\HtmlToText;
@@ -48,6 +49,12 @@ class PageRepository
      */
     protected $processor;
     
+    /**
+     *
+     * @var FilterInterface
+     */
+    protected $inputFilter;
+    
     
 
     /**
@@ -55,12 +62,14 @@ class PageRepository
      * @param Client $client
      * @param $htmlToTextFilter
      * @param PageProcessor $processor
+     * @param FilterInterface $inputFilter
      */
     public function __construct(
         array $configuration,
         Client $client,
         HtmlToText $htmlToTextFilter,
-        PageProcessor $processor
+        PageProcessor $processor,
+        FilterInterface $inputFilter
     ) {
         if (! isset($configuration['index'])) {
             throw new InvalidArgumentException('Missing configuration setting: index');
@@ -75,6 +84,7 @@ class PageRepository
         $this->client = $client;
         $this->htmlToTextFilter = $htmlToTextFilter;
         $this->processor = $processor;
+        $this->inputFilter = $inputFilter;
     }
 
     /**
@@ -128,6 +138,7 @@ class PageRepository
     }
 
     /**
+     * Executes an ElasticSearch "bool" query
      * 
      * @param array $mustCriteria
      * @param array $shouldCriteria
@@ -137,20 +148,32 @@ class PageRepository
     public function findBy(
         array $mustCriteria = [],
         array $shouldCriteria = [],
-        array $mustNotCriteria = []
+        array $mustNotCriteria = [],
+        $offset = null,
+        $limit = null
     ) {
+        $body = [
+            'query' => [
+                'bool' => [
+                    'must' => $mustCriteria,
+                    'should' => $shouldCriteria,
+                    'must_not' => $mustNotCriteria
+                ]
+            ]
+        ];
+        
+        foreach (['offset', 'limit'] as $constraint) {
+            $constraintValue = $$constraint;
+            
+            if ($constraintValue !== null) {
+                $body[$constraint] = $constraintValue;
+            }
+        }
+        
         $result = $this->client->search([
             'index' => $this->index,
             'type' => $this->type,
-            'body' => [
-                'query' => [
-                    'bool' => [
-                        'must' => $mustCriteria,
-                        'should' => $shouldCriteria,
-                        'must_not' => $mustNotCriteria
-                    ]
-                ]
-            ]
+            'body' => $body
         ]);
 
         $documents = [];
@@ -180,8 +203,12 @@ class PageRepository
      * @param array $terms
      * @return Document_Page[]
      */
-    public function find($text, array $filters = [], array $terms = [])
-    {
+    public function query(
+        $text,
+        array $filters = [],
+        $offset = null,
+        $limit = null
+    ) {
         $mustCriteria = [];
         
         if (!empty($text)) {
@@ -189,19 +216,15 @@ class PageRepository
         }
         
         foreach ($filters as $name => $term) {
-            $mustCriteria[]['match'][$name] = ['query' => (string) $term];
-        }
-        
-        foreach ($terms as $name => $term) {
             $mustCriteria[]['terms'] = [
-                $name => [str_replace(' ', '_', strtolower($term))],
+                $name => [$this->inputFilter->filter($term)],
                 'minimum_should_match' => 1
             ];
         }
         
-        return $this->findBy($mustCriteria);
+        return $this->findBy($mustCriteria, [], [], $offset, $limit);
     }
-
+    
     /**
      * @param Document_Page $document
      * @return array

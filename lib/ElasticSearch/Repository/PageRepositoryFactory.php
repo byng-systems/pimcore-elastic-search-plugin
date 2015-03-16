@@ -8,6 +8,8 @@
 namespace ElasticSearch\Repository;
 
 use Elasticsearch\Client;
+use ElasticSearch\Filter\FilterInterface;
+use ElasticSearch\Filter\TagKeyFilter;
 use ElasticSearch\Processor\Page\PageProcessorFactory;
 use NF\HtmlToText as HtmlToTextFilter;
 use Zend_Config_Xml;
@@ -33,10 +35,13 @@ class PageRepositoryFactory
     
     /**
      * @param Zend_Config_Xml $configuration
+     * @param FilterInterface|null $filter
      * @return PageRepository
      */
-    public function build(Zend_Config_Xml $configuration)
-    {
+    public function build(
+        Zend_Config_Xml $configuration,
+        FilterInterface $filter = null
+    ) {
         $elasticSearchClient = new Client(array(
             'hosts' => $configuration->hosts->toArray()
         ));
@@ -48,7 +53,8 @@ class PageRepositoryFactory
             ),
             $elasticSearchClient,
             new HtmlToTextFilter(),
-            $this->processorFactory->build()
+            $this->processorFactory->build(($filter = $filter ?: new TagKeyFilter())),
+            $filter
         );
 
         return $elasticSearchRepository;
