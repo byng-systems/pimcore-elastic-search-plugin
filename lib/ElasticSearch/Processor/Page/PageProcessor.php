@@ -32,6 +32,12 @@ class PageProcessor
     
     /**
      *
+     * @var SelectElementProcessor
+     */
+    protected $selectElementProcessor;
+    
+    /**
+     *
      * @var HrefElementProcessor
      */
     protected $hrefElementProcessor;
@@ -41,19 +47,22 @@ class PageProcessor
     /**
      * 
      * @param ElementProcessor $elementProcessor
+     * @param SelectElementProcessor $selectElementProcessor
      * @param HrefElementProcessor $hrefElementProcessor
      */
     public function __construct(
         ElementProcessor $elementProcessor,
+        SelectElementProcessor $selectElementProcessor,
         HrefElementProcessor $hrefElementProcessor
     ) {
         $this->elementProcessor = $elementProcessor;
+        $this->selectElementProcessor = $selectElementProcessor;
         $this->hrefElementProcessor = $hrefElementProcessor;
     }
     
     /**
      * 
-     * @param \ElasticSearch\Processor\Page\Document_Page $document
+     * @param Document_Page $document
      * @return array
      */
     public function processPage(Document_Page $document)
@@ -83,6 +92,9 @@ class PageProcessor
             case 'Document_Tag_Multihref':
                 return $this->hrefElementProcessor->processElement($element);
             
+            case 'Document_Tag_Select':
+                return $this->selectElementProcessor->processElement($element);
+                
             case 'Document_Tag':
             default:
                 return $this->elementProcessor->processElement($element);

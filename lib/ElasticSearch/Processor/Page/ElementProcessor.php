@@ -52,20 +52,10 @@ class ElementProcessor
     {
         $elementData = $tag->getData();
         
-        if (!is_string($elementData) || empty($elementData)) {
+        if (!is_string($elementData) || ($elementData = trim($elementData)) === '') {
             throw new ProcessorException(
                 'This processor only accepts tags with immediate string data'
             );
-        }
-        
-        if (
-            is_numeric(($elementData = trim($this->htmlToTextFilter->convert($elementData))))
-            && ($object = Object_Abstract::getById($elementData)) instanceof Object_Abstract
-        ) {
-            return [
-                $elementData,
-                $object->getKey()
-            ];
         }
         
         return $elementData;

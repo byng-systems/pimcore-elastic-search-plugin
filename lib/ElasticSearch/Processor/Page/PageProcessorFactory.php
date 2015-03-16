@@ -10,6 +10,8 @@
  */
 namespace ElasticSearch\Processor\Page;
 
+use ElasticSearch\Filter\FilterInterface;
+use ElasticSearch\Filter\TagKeyFilter;
 use NF\HtmlToText;
 
 
@@ -26,10 +28,11 @@ class PageProcessorFactory
      * 
      * @return PageProcessor
      */
-    public function build()
+    public function build(FilterInterface $filter = null)
     {
         return new PageProcessor(
             new ElementProcessor(new HtmlToText()),
+            new SelectElementProcessor($filter ?: new TagKeyFilter()),
             new HrefElementProcessor(new ObjectTagProcessor())
         );
     }
