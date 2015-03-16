@@ -24,13 +24,13 @@ class TagKeyFilter implements FilterInterface
      *
      * @var array
      */
-    protected $replaceable;
+    protected $replaceable = [' ', '-'];
     
     /**
      *
      * @var string
      */
-    protected $replacement;
+    protected $replacement = '_';
     
     
     
@@ -39,14 +39,15 @@ class TagKeyFilter implements FilterInterface
      * @param array $replaceable
      * @param type $replacement
      */
-    public function __construct(
-        array $replaceable = [' ', '-'],
-        $replacement = '_'
-    ) {
-        $this
-            ->setReplaceable($replaceable)
-            ->setReplacement($replacement)
-        ;
+    public function __construct(array $replaceable = null, $replacement = null)
+    {
+        if ($replaceable !== null) {
+            $this->setReplaceable($replaceable);
+        }
+        
+        if ($replacement !== null) {
+            $this->setReplacement($replacement);
+        }
     }
     
     /**
