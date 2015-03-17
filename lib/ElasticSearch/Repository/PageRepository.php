@@ -10,6 +10,7 @@ namespace ElasticSearch\Repository;
 
 use Document_Page;
 use Elasticsearch\Client;
+use Elasticsearch\Endpoints\Delete as DeleteEndpoint;
 use ElasticSearch\Filter\FilterInterface;
 use ElasticSearch\Processor\Page\PageProcessor;
 use InvalidArgumentException;
@@ -30,13 +31,19 @@ class PageRepository
      * @var string
      */
     protected $type;
-
+    
     /**
      * 
      * @var Client
      */
     protected $client;
-
+    
+    /**
+     *
+     * @var DeleteEndpoint
+     */
+    protected $deleteEndpoint;
+    
     /**
      * 
      * @var HtmlToText
@@ -106,6 +113,19 @@ class PageRepository
         }
 
         return $this->client->delete($params);
+    }
+    
+    /**
+     * Clears all entries from this index
+     * 
+     * @return array
+     */
+    public function clear()
+    {
+        $this->client->indices()->deleteMapping([
+            'index' => $this->index,
+            'type' => $this->type
+        ]);
     }
 
     /**
