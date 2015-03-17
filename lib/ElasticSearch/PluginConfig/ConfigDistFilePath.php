@@ -5,7 +5,7 @@
  * @package     
  */
 
-namespace ElasticSearch;
+namespace ElasticSearch\PluginConfig;
 
 class ConfigDistFilePath
 {

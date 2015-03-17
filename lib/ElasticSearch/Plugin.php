@@ -7,10 +7,13 @@
  * @package     Elastic Search Plugin
  */
 
-use ElasticSearch\ConfigDistFilePath;
-use ElasticSearch\ConfigFilePath;
-use ElasticSearch\EventManager as DocumentEventManager;
-use ElasticSearch\PageRepositoryFactory;
+use ElasticSearch\Event\EventManager as DocumentEventManager;
+use ElasticSearch\Job\CacheAllPagesJob;
+use ElasticSearch\PluginConfig\ConfigDistFilePath;
+use ElasticSearch\PluginConfig\ConfigFilePath;
+use ElasticSearch\Repository\PageRepositoryFactory;
+
+
 
 class ElasticSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore_API_Plugin_Interface
 {
@@ -23,11 +26,13 @@ class ElasticSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcor
 
         $documentEventManager = new DocumentEventManager(
             Pimcore::getEventManager(),
-            $pageRepository
+            $pageRepository,
+            new CacheAllPagesJob($pageRepository)
         );
 
         $documentEventManager->attachPostDelete();
         $documentEventManager->attachPostUpdate();
+        $documentEventManager->attachMaintenance();
     }
 
     public static function install()
@@ -40,7 +45,7 @@ class ElasticSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcor
 
         if (! is_writable($configPath->getDirectory())) {
 
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 'Unable to write to config directory: ' . $configPath->getDirectory()
             );
         }
@@ -50,7 +55,7 @@ class ElasticSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcor
             return true;
         }
 
-        throw new \RuntimeException('Unable to create a config file: ' . $configPath);
+        throw new RuntimeException('Unable to create a config file: ' . $configPath);
     }
 
     public static function uninstall()
