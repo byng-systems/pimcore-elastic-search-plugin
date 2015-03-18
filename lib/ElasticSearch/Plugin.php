@@ -32,7 +32,7 @@ class ElasticSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcor
 
         $documentEventManager->attachPostDelete();
         $documentEventManager->attachPostUpdate();
-        $documentEventManager->attachMaintenance();
+        // $documentEventManager->attachMaintenance();
     }
 
     public static function install()
