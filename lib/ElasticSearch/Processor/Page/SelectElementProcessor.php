@@ -31,15 +31,25 @@ class SelectElementProcessor
      */
     protected $filter;
     
+    /**
+     *
+     * @var ElementProcessor
+     */
+    protected $fallbackProcessor;
+    
     
     
     /**
      * 
      * @param FilterInterface $filter
+     * @param ElementProcessor $fallbackProcessor
      */
-    public function __construct(FilterInterface $filter)
-    {
+    public function __construct(
+        FilterInterface $filter,
+        ElementProcessor $fallbackProcessor
+    ) {
         $this->filter = $filter;
+        $this->fallbackProcessor = $fallbackProcessor;
     }
 
     /**
@@ -62,9 +72,7 @@ class SelectElementProcessor
             ];
         }
         
-        throw new ProcessorException(
-            'This processor only accepts tags with immediate string data'
-        );
+        return $this->fallbackProcessor->processElement($select);
     }
     
 }

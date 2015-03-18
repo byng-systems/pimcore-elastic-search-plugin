@@ -30,9 +30,14 @@ class PageProcessorFactory
      */
     public function build(FilterInterface $filter = null)
     {
+        $elementProcessor = new ElementProcessor(new HtmlToText());
+        
         return new PageProcessor(
-            new ElementProcessor(new HtmlToText()),
-            new SelectElementProcessor($filter ?: new TagKeyFilter()),
+            $elementProcessor,
+            new SelectElementProcessor(
+                ($filter ?: new TagKeyFilter()),
+                $elementProcessor
+            ),
             new HrefElementProcessor(new ObjectTagProcessor())
         );
     }
