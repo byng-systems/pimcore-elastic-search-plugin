@@ -133,13 +133,7 @@ class PageRepository
      */
     public function save(Document_Page $document)
     {
-        $params = $this->pageToArray($document);
-
-        if ($this->exists($document)) {
-            $this->client->update($params);
-        } else {
-            $this->client->create($params);
-        }
+        $this->client->index($this->pageToArray($document));
     }
 
     /**

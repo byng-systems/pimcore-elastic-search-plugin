@@ -45,8 +45,6 @@ class CacheAllPagesJob
      */
     public function rebuildPageCache()
     {
-        // $this->pageRepository->clear();
-        
         foreach (Document_Page::getList() as $document) {
             if ($document instanceof Document_Page && $document->isPublished()) {
                 $this->rebuildDocumentCache($document);
