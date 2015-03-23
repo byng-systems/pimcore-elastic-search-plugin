@@ -10,10 +10,8 @@
  */
 namespace ElasticSearch\Processor\Page;
 
-use Document_Tag;
 use ElasticSearch\Processor\ProcessorException;
 use NF\HtmlToText;
-use Object_Abstract;
 
 
 
@@ -58,7 +56,8 @@ class ElementProcessor
             );
         }
         
-        return $this->htmlToTextFilter->convert($elementData);
+        // This needs to be handled much more elegantly than with the error suppression operator
+        return @$this->htmlToTextFilter->convert($elementData);
     }
     
 }
