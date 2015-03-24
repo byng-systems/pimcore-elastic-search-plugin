@@ -67,7 +67,13 @@ class PageProcessor
      */
     public function processPage(Document_Page $document)
     {
-        $body = [];
+        $body = [
+            'controller'    =>  $document->getController(),
+            'action'        =>  $document->getAction(),
+            'created'       =>  $document->getCreationDate(),
+            'title'         =>  $document->getTitle(),
+            'description'   =>  $document->getDescription()
+        ];
         
         /* @var Document_Tag $element */
         foreach ($document->getElements() as $key => $element) {

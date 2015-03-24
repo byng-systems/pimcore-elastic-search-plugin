@@ -10,6 +10,7 @@
  */
 namespace ElasticSearch\Processor\Page;
 
+use Document_Tag;
 use ElasticSearch\Processor\ProcessorException;
 use NF\HtmlToText;
 
