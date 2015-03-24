@@ -157,6 +157,8 @@ class PageRepository
      * @param array $mustCriteria
      * @param array $shouldCriteria
      * @param array $mustNotCriteria
+     * @param integer|null $offset
+     * @param integer|null $limit
      * @return Document_Page[]
      */
     public function findBy(
@@ -214,16 +216,20 @@ class PageRepository
      *
      * @param string $text
      * @param array $filters
-     * @param array $terms
+     * @param array $negationFilters
+     * @param integer|null $offset
+     * @param integer|null $limit
      * @return Document_Page[]
      */
     public function query(
         $text,
         array $filters = [],
+        array $negationFilters = [],
         $offset = null,
         $limit = null
     ) {
         $mustCriteria = [];
+        $mustNotCriteria = [];
         
         if (!empty($text)) {
             $mustCriteria[]['match']['_all'] = ['query' => (string) $text];
@@ -236,7 +242,14 @@ class PageRepository
             ];
         }
         
-        return $this->findBy($mustCriteria, [], [], $offset, $limit);
+        foreach ($negationFilters as $name => $term) {
+            $mustNotCriteria[]['terms'] = [
+                $name => [$this->inputFilter->filter($term)],
+                'minimum_should_match' => 1
+            ];
+        }
+        
+        return $this->findBy($mustCriteria, [], $mustNotCriteria, $offset, $limit);
     }
     
     /**
