@@ -54,25 +54,33 @@ class SelectElementProcessor
 
     /**
      * 
+     * @param array $body
+     * @param type $key
      * @param Document_Tag_Select $select
-     * @return string
      * @throws ProcessorException
      */
-    public function processElement(Document_Tag_Select $select)
-    {
+    public function processElement(
+        array &$body,
+        $key,
+        Document_Tag_Select $select
+    ) {
         $elementData = $select->getData();
         
         if (
             is_numeric(($elementData = trim($elementData)))
             && ($object = Object_Abstract::getById($elementData)) instanceof Object_Abstract
         ) {
-            return [
+            $rawElementData = $object->getKey();
+            
+            $body[$key] = [
                 $elementData,
-                $this->filter->filter($object->getKey())
+                $this->filter->filter($rawElementData)
             ];
+            
+            return ($body[$key . '-collated'] = $rawElementData);
         }
         
-        return $this->fallbackProcessor->processElement($select);
+        return $body[$key] = $this->fallbackProcessor->processElement($select);
     }
     
 }
