@@ -34,6 +34,7 @@ class PageProcessorFactory
         
         return new PageProcessor(
             $elementProcessor,
+            new DateElementProcessor(),
             new SelectElementProcessor(
                 ($filter ?: new TagKeyFilter()),
                 $elementProcessor
