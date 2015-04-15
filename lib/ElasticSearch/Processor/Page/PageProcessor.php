@@ -32,6 +32,12 @@ class PageProcessor
     
     /**
      *
+     * @var DateElementProcessor
+     */
+    protected $dateElementProcessor;
+    
+    /**
+     *
      * @var SelectElementProcessor
      */
     protected $selectElementProcessor;
@@ -47,15 +53,18 @@ class PageProcessor
     /**
      * 
      * @param ElementProcessor $elementProcessor
+     * @param DateElementProcessor $dateElementProcessor
      * @param SelectElementProcessor $selectElementProcessor
      * @param HrefElementProcessor $hrefElementProcessor
      */
     public function __construct(
         ElementProcessor $elementProcessor,
+        DateElementProcessor $dateElementProcessor,
         SelectElementProcessor $selectElementProcessor,
         HrefElementProcessor $hrefElementProcessor
     ) {
         $this->elementProcessor = $elementProcessor;
+        $this->dateElementProcessor = $dateElementProcessor;
         $this->selectElementProcessor = $selectElementProcessor;
         $this->hrefElementProcessor = $hrefElementProcessor;
     }
@@ -114,6 +123,10 @@ class PageProcessor
                     $elementKey,
                     $element
                 );
+                return;
+                
+            case 'Document_Tag_Date':
+                $body[$elementKey] = $this->dateElementProcessor->processElement($element);
                 return;
                 
             case 'Document_Tag':

@@ -159,6 +159,7 @@ class PageRepository
      * @param array $mustNotCriteria
      * @param integer|null $offset
      * @param integer|null $limit
+     * @param array $sorting
      * @return Document_Page[]
      */
     public function findBy(
@@ -166,7 +167,8 @@ class PageRepository
         array $shouldCriteria = [],
         array $mustNotCriteria = [],
         $offset = null,
-        $limit = null
+        $limit = null,
+        $sorting = []
     ) {
         $body = [
             'query' => [
@@ -184,6 +186,10 @@ class PageRepository
             if ($constraintValue !== null) {
                 $body[$constraint] = $constraintValue;
             }
+        }
+        
+        if (!empty($sorting)) {
+            $body['sort'] = $sorting;
         }
         
         $result = $this->client->search([
@@ -219,6 +225,7 @@ class PageRepository
      * @param array $negationFilters
      * @param integer|null $offset
      * @param integer|null $limit
+     * @param array $sorting
      * @return Document_Page[]
      */
     public function query(
@@ -226,7 +233,8 @@ class PageRepository
         array $filters = [],
         array $negationFilters = [],
         $offset = null,
-        $limit = null
+        $limit = null,
+        $sorting = []
     ) {
         $mustCriteria = [];
         $mustNotCriteria = [];
@@ -237,19 +245,26 @@ class PageRepository
         
         foreach ($filters as $name => $term) {
             $mustCriteria[]['terms'] = [
-                $name => [$this->inputFilter->filter($term)],
+                $name => (is_array($term) ? $term : [$this->inputFilter->filter($term)]),
                 'minimum_should_match' => 1
             ];
         }
         
         foreach ($negationFilters as $name => $term) {
             $mustNotCriteria[]['terms'] = [
-                $name => [$this->inputFilter->filter($term)],
+                $name => (is_array($term) ? $term : [$this->inputFilter->filter($term)]),
                 'minimum_should_match' => 1
             ];
         }
         
-        return $this->findBy($mustCriteria, [], $mustNotCriteria, $offset, $limit);
+        return $this->findBy(
+            $mustCriteria,
+            [],
+            $mustNotCriteria,
+            $offset,
+            $limit,
+            $sorting
+        );
     }
     
     /**
