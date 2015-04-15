@@ -245,14 +245,14 @@ class PageRepository
         
         foreach ($filters as $name => $term) {
             $mustCriteria[]['terms'] = [
-                $name => [$this->inputFilter->filter($term)],
+                $name => (is_array($term) ? $term : [$this->inputFilter->filter($term)]),
                 'minimum_should_match' => 1
             ];
         }
         
         foreach ($negationFilters as $name => $term) {
             $mustNotCriteria[]['terms'] = [
-                $name => [$this->inputFilter->filter($term)],
+                $name => (is_array($term) ? $term : [$this->inputFilter->filter($term)]),
                 'minimum_should_match' => 1
             ];
         }
