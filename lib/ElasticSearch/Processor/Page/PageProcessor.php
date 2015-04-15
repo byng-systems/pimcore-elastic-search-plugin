@@ -83,7 +83,7 @@ class PageProcessor
             }
             
             try {
-                $body[$key] = $this->processPageElement($element);
+                $this->processPageElement($body, $key, $element);
             } catch (ProcessorException $ex) {
                 continue;
             }
@@ -92,18 +92,34 @@ class PageProcessor
         return $body;
     }
     
-    protected function processPageElement(Document_Tag $element)
-    {
+    /**
+     * 
+     * @param array $body
+     * @param string $elementKey
+     * @param Document_Tag $element
+     */
+    protected function processPageElement(
+        array &$body,
+        $elementKey,
+        Document_Tag $element
+    ) {
         switch (ltrim(get_class($element), '\\')) {
             case 'Document_Tag_Multihref':
-                return $this->hrefElementProcessor->processElement($element);
+                $body[$elementKey] = $this->hrefElementProcessor->processElement($element);
+                return;
             
             case 'Document_Tag_Select':
-                return $this->selectElementProcessor->processElement($element);
+                $this->selectElementProcessor->processElement(
+                    $body,
+                    $elementKey,
+                    $element
+                );
+                return;
                 
             case 'Document_Tag':
             default:
-                return $this->elementProcessor->processElement($element);
+                $body[$elementKey] = $this->elementProcessor->processElement($element);
+                return;
         }
     }
     
