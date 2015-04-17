@@ -24,7 +24,7 @@ class TagKeyFilter implements FilterInterface
      *
      * @var array
      */
-    protected $replaceable = [' ', '-'];
+    protected $replaceable = [' ', '-', '\''];
     
     /**
      *
