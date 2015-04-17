@@ -14,6 +14,7 @@ namespace ElasticSearch\Model;
 use ArrayAccess;
 use BadMethodCallException;
 use Countable;
+use InvalidArgumentException;
 use Iterator;
 use UnexpectedValueException;
 
@@ -41,16 +42,23 @@ class ResultsList implements Iterator, ArrayAccess, Countable
     
     
     
+    /**
+     * 
+     * @param array $results
+     * @param integer $totalHits
+     * @throws InvalidArgumentException
+     * @throws UnexpectedValueException
+     */
     public function __construct(array $results, $totalHits)
     {
         $this->results = $results;
         
         if (!is_numeric($totalHits)) {
-            
+            throw new InvalidArgumentException("Number of total hits must be given as an integer");
         }
         
         if ((($totalHits = (int) $totalHits)) < 0) {
-            throw new UnexpectedValueException("Number of total hits must be given as an integer");
+            throw new UnexpectedValueException("Number of total hits must be greater than or equal to zero");
         }
         $this->totalHits = $totalHits;
     }
