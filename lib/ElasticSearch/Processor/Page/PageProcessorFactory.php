@@ -39,7 +39,7 @@ class PageProcessorFactory
                 ($filter ?: new TagKeyFilter()),
                 $elementProcessor
             ),
-            new HrefElementProcessor(new ObjectTagProcessor())
+            new HrefElementProcessor(new ObjectTagProcessor(), $filter)
         );
     }
     

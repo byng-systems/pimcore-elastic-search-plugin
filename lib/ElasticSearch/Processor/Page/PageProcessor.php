@@ -114,7 +114,11 @@ class PageProcessor
     ) {
         switch (ltrim(get_class($element), '\\')) {
             case 'Document_Tag_Multihref':
-                $body[$elementKey] = $this->hrefElementProcessor->processElement($element);
+                $this->hrefElementProcessor->processElement(
+                    $body,
+                    $elementKey,
+                    $element
+                );
                 return;
             
             case 'Document_Tag_Select':

@@ -10,8 +10,8 @@
  */
 namespace ElasticSearch\Processor\Page;
 
-use Document_Tag_Href;
 use Document_Tag_Multihref;
+use ElasticSearch\Filter\FilterInterface;
 use Object_Tag;
 
 
@@ -30,33 +30,55 @@ class HrefElementProcessor
      */
     protected $objectTagProcessor;
     
+    /**
+     *
+     * @var FilterInterface
+     */
+    protected $tagKeyFilter;
+    
     
     
     /**
      * 
      * @param ObjectTagProcessor $objectTagProcessor
+     * @param FilterInterface $tagKeyFilter
      */
-    public function __construct(ObjectTagProcessor $objectTagProcessor)
-    {
+    public function __construct(
+        ObjectTagProcessor $objectTagProcessor,
+        FilterInterface $tagKeyFilter
+    ) {
         $this->objectTagProcessor = $objectTagProcessor;
+        $this->tagKeyFilter = $tagKeyFilter;
     }
     
     /**
      * 
+     * @param array $body
+     * @param string $elementKey
      * @param Document_Tag_Multihref $element
      * @return array
      */
-    public function processElement(Document_Tag_Multihref $element)
-    {
-        $tags = [];
+    public function processElement(
+        array &$body,
+        $elementKey,
+        Document_Tag_Multihref $element
+    ) {
+        $tagKeys = [];
+        $tagValues = [];
         
         foreach ($element->getElements() as $childElement) {
             if ($childElement instanceof Object_Tag) {
-                $tags[] = $this->objectTagProcessor->processTag($childElement);
+                $tagKeys[] = $this->tagKeyFilter->filter($childElement->getKey());
+                $tagKeys[] = $this->objectTagProcessor->processTag($childElement);
+                
+                $tagValues[] = $childElement->getName();
             }
         }
         
-        return $tags;
+        $body[$elementKey] = $tagKeys;
+        $body[$elementKey . '-collated'] = implode(' ', $tagValues);
+        
+        return $tagKeys;
     }
     
 }
