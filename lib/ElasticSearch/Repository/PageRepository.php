@@ -12,6 +12,7 @@ use Document_Page;
 use Elasticsearch\Client;
 use Elasticsearch\Endpoints\Delete as DeleteEndpoint;
 use ElasticSearch\Filter\FilterInterface;
+use ElasticSearch\Model\ResultsList;
 use ElasticSearch\Processor\Page\PageProcessor;
 use InvalidArgumentException;
 use NF\HtmlToText;
@@ -160,7 +161,8 @@ class PageRepository
      * @param integer|null $offset
      * @param integer|null $limit
      * @param array $sorting
-     * @return Document_Page[]
+     * @param array $additionalOptions
+     * @return ResultsList
      */
     public function findBy(
         array $mustCriteria = [],
@@ -168,16 +170,17 @@ class PageRepository
         array $mustNotCriteria = [],
         $offset = null,
         $limit = null,
-        $sorting = []
+        $sorting = [],
+        $additionalOptions = []
     ) {
-        $body = [
+        $body = $additionalOptions + [
             'query' => [
                 'bool' => [
                     'must' => $mustCriteria,
                     'should' => $shouldCriteria,
                     'must_not' => $mustNotCriteria
                 ]
-            ]
+            ],
         ];
         
         foreach (['offset', 'limit'] as $constraint) {
@@ -213,8 +216,8 @@ class PageRepository
                 $documents[] = $document;
             }
         }
-
-        return $documents;
+        
+        return new ResultsList($documents, $result['hits']['total']);
     }
     
     /**
@@ -226,7 +229,8 @@ class PageRepository
      * @param integer|null $offset
      * @param integer|null $limit
      * @param array $sorting
-     * @return Document_Page[]
+     * @param array $additionalOptions
+     * @return ResultsList
      */
     public function query(
         $text,
@@ -234,7 +238,8 @@ class PageRepository
         array $negationFilters = [],
         $offset = null,
         $limit = null,
-        $sorting = []
+        $sorting = [],
+        $additionalOptions = []
     ) {
         $mustCriteria = [];
         $mustNotCriteria = [];
@@ -263,7 +268,8 @@ class PageRepository
             $mustNotCriteria,
             $offset,
             $limit,
-            $sorting
+            $sorting,
+            $additionalOptions
         );
     }
     
