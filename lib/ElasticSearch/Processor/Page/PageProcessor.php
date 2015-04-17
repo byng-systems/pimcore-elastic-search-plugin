@@ -112,10 +112,6 @@ class PageProcessor
         $elementKey,
         Document_Tag $element
     ) {
-        if ($elementKey === 'article-tags-drop') {
-            $a = 'b';
-        }
-        
         switch (ltrim(get_class($element), '\\')) {
             case 'Document_Tag_Multihref':
                 $this->hrefElementProcessor->processElement(
