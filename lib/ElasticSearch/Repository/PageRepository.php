@@ -23,6 +23,18 @@ class PageRepository
 {
     /**
      * 
+     */
+    const MATCH_QUERY_OPERATOR_AND = 'and';
+    
+    /**
+     * 
+     */
+    const MATCH_QUERY_OPERATOR_OR = 'or';
+    
+    
+    
+    /**
+     * 
      * @var string
      */
     protected $index;
@@ -232,6 +244,7 @@ class PageRepository
      * @param array $additionalOptions
      * @param string $matchOperator
      * @return ResultsList
+     * @throws UnexpectedValueException
      */
     public function query(
         $text,
@@ -241,12 +254,22 @@ class PageRepository
         $limit = null,
         $sorting = [],
         $additionalOptions = [],
-        $matchOperator = 'and'
+        $matchOperator = self::MATCH_QUERY_OPERATOR_AND
     ) {
         $mustCriteria = [];
         $mustNotCriteria = [];
         
         if (!empty($text)) {
+            switch ($matchOperator) {
+                case self::MATCH_QUERY_OPERATOR_AND:
+                case self::MATCH_QUERY_OPERATOR_OR:
+                    break;
+                default:
+                    throw new UnexpectedArgumentException(
+                        "Invalid query operator specified; expected one of: 'and', 'or'"
+                    );
+            }
+            
             $mustCriteria[]['match']['_all'] = [
                 'query' => (string) $text,
                 'operator' => $matchOperator
