@@ -23,6 +23,18 @@ class PageRepository
 {
     /**
      * 
+     */
+    const MATCH_QUERY_OPERATOR_AND = 'and';
+    
+    /**
+     * 
+     */
+    const MATCH_QUERY_OPERATOR_OR = 'or';
+    
+    
+    
+    /**
+     * 
      * @var string
      */
     protected $index;
@@ -221,8 +233,8 @@ class PageRepository
     }
     
     /**
-     * Finds documents by text
-     *
+     * Finds documents by text and term filters
+     * 
      * @param string $text
      * @param array $filters
      * @param array $negationFilters
@@ -230,7 +242,9 @@ class PageRepository
      * @param integer|null $limit
      * @param array $sorting
      * @param array $additionalOptions
+     * @param string $matchOperator
      * @return ResultsList
+     * @throws UnexpectedValueException
      */
     public function query(
         $text,
@@ -239,13 +253,27 @@ class PageRepository
         $offset = null,
         $limit = null,
         $sorting = [],
-        $additionalOptions = []
+        $additionalOptions = [],
+        $matchOperator = self::MATCH_QUERY_OPERATOR_AND
     ) {
         $mustCriteria = [];
         $mustNotCriteria = [];
         
         if (!empty($text)) {
-            $mustCriteria[]['match']['_all'] = ['query' => (string) $text];
+            switch ($matchOperator) {
+                case self::MATCH_QUERY_OPERATOR_AND:
+                case self::MATCH_QUERY_OPERATOR_OR:
+                    break;
+                default:
+                    throw new UnexpectedArgumentException(
+                        "Invalid query operator specified; expected one of: 'and', 'or'"
+                    );
+            }
+            
+            $mustCriteria[]['match']['_all'] = [
+                'query' => (string) $text,
+                'operator' => $matchOperator
+            ];
         }
         
         foreach ($filters as $name => $term) {
