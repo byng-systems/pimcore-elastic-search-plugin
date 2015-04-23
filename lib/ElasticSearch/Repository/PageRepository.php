@@ -239,13 +239,17 @@ class PageRepository
         $offset = null,
         $limit = null,
         $sorting = [],
-        $additionalOptions = []
+        $additionalOptions = [],
+        $matchOperator = 'and'
     ) {
         $mustCriteria = [];
         $mustNotCriteria = [];
         
         if (!empty($text)) {
-            $mustCriteria[]['match']['_all'] = ['query' => (string) $text];
+            $mustCriteria[]['match']['_all'] = [
+                'query' => (string) $text,
+                'operator' => $matchOperator
+            ];
         }
         
         foreach ($filters as $name => $term) {
