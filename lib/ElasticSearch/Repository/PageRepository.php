@@ -221,8 +221,8 @@ class PageRepository
     }
     
     /**
-     * Finds documents by text
-     *
+     * Finds documents by text and term filters
+     * 
      * @param string $text
      * @param array $filters
      * @param array $negationFilters
@@ -230,6 +230,7 @@ class PageRepository
      * @param integer|null $limit
      * @param array $sorting
      * @param array $additionalOptions
+     * @param string $matchOperator
      * @return ResultsList
      */
     public function query(
