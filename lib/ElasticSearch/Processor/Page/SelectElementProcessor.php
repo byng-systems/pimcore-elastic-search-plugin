@@ -10,6 +10,7 @@
  */
 namespace ElasticSearch\Processor\Page;
 
+use Document_Tag_Multiselect;
 use Document_Tag_Select;
 use ElasticSearch\Filter\FilterInterface;
 use ElasticSearch\Processor\ProcessorException;
@@ -81,6 +82,14 @@ class SelectElementProcessor
         }
         
         return $body[$key] = $this->fallbackProcessor->processElement($select);
+    }
+    
+    public function processMultiSelectElement(
+        array &$body,
+        $key,
+        Document_Tag_Multiselect $select
+    ) {
+        return ($body[$key] = $select->getData());
     }
     
 }
