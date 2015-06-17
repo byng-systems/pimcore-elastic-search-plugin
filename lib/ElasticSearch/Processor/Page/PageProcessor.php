@@ -129,6 +129,14 @@ class PageProcessor
                 );
                 return;
                 
+            case 'Document_Tag_Multiselect':
+                $this->selectElementProcessor->processMultiSelectElement(
+                    $body,
+                    $elementKey,
+                    $element
+                );
+                return;
+                
             case 'Document_Tag_Date':
                 $body[$elementKey] = $this->dateElementProcessor->processElement($element);
                 return;
