@@ -1,23 +1,25 @@
 <?php
 
-/**
- * Class ElasticSearch_Plugin
- *
- * @author      Michal Maszkiewicz
- * @package     Elastic Search Plugin
- */
-
 use ElasticSearch\Event\EventManager as DocumentEventManager;
 use ElasticSearch\Job\CacheAllPagesJob;
 use ElasticSearch\PluginConfig\ConfigDistFilePath;
 use ElasticSearch\PluginConfig\ConfigFilePath;
 use ElasticSearch\Repository\PageRepositoryFactory;
+use Pimcore\API\Plugin\AbstractPlugin;
+use Pimcore\API\Plugin\PluginInterface;
 
-
-
-class ElasticSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore_API_Plugin_Interface
+/**
+ * ElasticSearch Pimcore Plugin
+ *
+ * @author Elliot Wright <elliot@byng.co>
+ * @author Matt Ward <matt@byng.co>
+ * @author Michal Maszkiewicz
+ */
+final class ElasticSearchPlugin extends AbstractPlugin implements PluginInterface
 {
-
+    /**
+     * {@inheritdoc}
+     */
     public function init()
     {
         $config = new Zend_Config_Xml(new ConfigFilePath());
@@ -35,6 +37,9 @@ class ElasticSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcor
         $documentEventManager->attachMaintenance();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function install()
     {
         if (self::isInstalled()) {
@@ -43,46 +48,49 @@ class ElasticSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcor
 
         $configPath = new ConfigFilePath();
 
-        if (! is_writable($configPath->getDirectory())) {
-
-            throw new RuntimeException(
-                'Unable to write to config directory: ' . $configPath->getDirectory()
-            );
+        if (!is_writable($configPath->getDirectory())) {
+            throw new RuntimeException(sprintf(
+                "Unable to write to config directory: '%s'",
+                $configPath->getDirectory()
+            ));
         }
 
         if (copy(new ConfigDistFilePath(), $configPath)) {
-
             return true;
         }
 
-        throw new RuntimeException('Unable to create a config file: ' . $configPath);
+        throw new RuntimeException("Unable to create a config file: " . $configPath);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function uninstall()
     {
         if (self::isInstalled()) {
-
             unlink(new ConfigFilePath());
-
         }
 
         return true;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function isInstalled()
     {
         $configPath = new ConfigFilePath();
 
         if (file_exists($configPath)) {
-
             if (is_writable($configPath)) {
-
                 // Consider installed as config file exists and is writable.
                 return true;
             }
 
-            throw new RuntimeException('Config file exists, but is not writable: ' . $configPath);
-
+            throw new RuntimeException(sprintf(
+                "Config file exists, but is not writable: '%s'",
+                $configPath
+            ));
         }
 
         return false;

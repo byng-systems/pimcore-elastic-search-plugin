@@ -1,21 +1,34 @@
 <?php
-/**
- *
- * @author      Michal Maszkiewicz
- * @package     
- */
 
 namespace ElasticSearch\PluginConfig;
 
-class ConfigDistFilePath
+/**
+ * Config Dist File Path
+ *
+ * @author Elliot Wright <elliot@byng.co>
+ * @author Matt Ward <matt@byng.co>
+ * @author Michal Maszkiewicz
+ */
+final class ConfigDistFilePath
 {
-    protected $filePath;
+    /**
+     * @var string
+     */
+    private $filePath;
 
+    /**
+     * Constructor
+     */
     public function __construct()
     {
-        $this->filePath = PIMCORE_PLUGINS_PATH . '/ElasticSearch/config.xml.dist';
+        $this->filePath = PIMCORE_PLUGINS_PATH . "/ElasticSearch/config.xml.dist";
     }
 
+    /**
+     * __toString
+     *
+     * @return string
+     */
     public function __toString()
     {
         return $this->filePath;

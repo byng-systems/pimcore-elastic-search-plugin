@@ -1,2 +1,1 @@
-
 ElasticSearch Plugin works!

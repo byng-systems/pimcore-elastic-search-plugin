@@ -1,35 +1,27 @@
 <?php
-/**
- * ObjectTagProcessor.php
- * Definition of class ObjectTagProcessor
- * 
- * Created 16-Mar-2015 12:25:12
- *
- * @author M.D.Ward <matthew.ward@byng.co>
- * @copyright (c) 2015, Byng Services Ltd
- */
+
 namespace ElasticSearch\Processor\Page;
 
 use Object_Tag;
 
-
-
 /**
  * ObjectTagProcessor
- * 
- * @author M.D.Ward <matthew.ward@byng.co>
+ *
+ * @author Elliot Wright <elliot@byng.co>
+ * @author Matt Ward <matt@byng.co>
  */
-class ObjectTagProcessor
+final class ObjectTagProcessor
 {
-    
     /**
-     * 
+     * Process a tag object
+     *
      * @param Object_Tag $tag
-     * @return string|null
+     *
+     * @return string
      */
     public function processTag(Object_Tag $tag)
     {
-        return str_replace(' ', '_', $tag->getName());
+        return str_replace(" ", "_", $tag->getName());
     }
-    
+
 }

@@ -1,47 +1,34 @@
 <?php
-/**
- * SelectElementProcessor.php
- * Definition of class SelectElementProcessor
- * 
- * Created 16-Mar-2015 15:24:55
- *
- * @author M.D.Ward <matthew.ward@byng.co>
- * @copyright (c) 2015, Byng Services Ltd
- */
+
 namespace ElasticSearch\Processor\Page;
 
-use Document_Tag_Multiselect;
-use Document_Tag_Select;
 use ElasticSearch\Filter\FilterInterface;
-use ElasticSearch\Processor\ProcessorException;
-use Object_Abstract;
-
-
+use Pimcore\Model\Document\Tag\Multiselect;
+use Pimcore\Model\Document\Tag\Select;
+use Pimcore\Model\Object\AbstractObject;
 
 /**
- * SelectElementProcessor
- * 
- * @author M.D.Ward <matthew.ward@byng.co>
+ * Select Element Processor
+ *
+ * @author Elliot Wright <elliot@byng.co>
+ * @author Matt Ward <matt@byng.co>
  */
-class SelectElementProcessor
+final class SelectElementProcessor
 {
-    
     /**
-     *
      * @var FilterInterface
      */
-    protected $filter;
-    
+    private $filter;
+
     /**
-     *
      * @var ElementProcessor
      */
-    protected $fallbackProcessor;
-    
-    
-    
+    private $fallbackProcessor;
+
+
     /**
-     * 
+     * Constructor
+     *
      * @param FilterInterface $filter
      * @param ElementProcessor $fallbackProcessor
      */
@@ -54,42 +41,50 @@ class SelectElementProcessor
     }
 
     /**
-     * 
+     * Process element
+     *
      * @param array $body
-     * @param type $key
-     * @param Document_Tag_Select $select
-     * @throws ProcessorException
+     * @param string $key
+     * @param Select $select
+     *
+     * @return string
      */
     public function processElement(
         array &$body,
         $key,
-        Document_Tag_Select $select
+        Select $select
     ) {
-        $elementData = $select->getData();
-        
-        if (
-            is_numeric(($elementData = trim($elementData)))
-            && ($object = Object_Abstract::getById($elementData)) instanceof Object_Abstract
-        ) {
+        $elementData = trim($select->getData());
+        $object = AbstractObject::getById($elementData);
+
+        if (is_numeric($elementData) && $object instanceof AbstractObject) {
             $rawElementData = $object->getKey();
-            
+
             $body[$key] = [
                 $elementData,
                 $this->filter->filter($rawElementData)
             ];
-            
-            return ($body[$key . '-collated'] = $rawElementData);
+
+            return ($body[$key . "-collated"] = $rawElementData);
         }
-        
+
         return $body[$key] = $this->fallbackProcessor->processElement($select);
     }
-    
+
+    /**
+     * Process MultiSelect Element
+     *
+     * @param array $body
+     * @param string $key
+     * @param Multiselect $select
+     *
+     * @return string|array
+     */
     public function processMultiSelectElement(
         array &$body,
         $key,
-        Document_Tag_Multiselect $select
+        Multiselect $select
     ) {
         return ($body[$key] = $select->getData());
     }
-    
 }

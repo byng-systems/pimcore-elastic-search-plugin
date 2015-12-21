@@ -1,70 +1,64 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace ElasticSearch\Job;
 
-use Document_Page;
 use ElasticSearch\Repository\PageRepository;
 use Exception;
 use Logger;
-
-
+use Pimcore\Model\Document\Page;
 
 /**
  * Description of CacheAllPagesJob
  *
- * @author matt
+ * @author Elliot Wright <elliot@byng.co>
+ * @author Matt Ward <matt@byng.co>
  */
-class CacheAllPagesJob
+final class CacheAllPagesJob
 {
-    
     /**
-     *
-     * @var PageRepository 
+     * @var PageRepository
      */
-    protected $pageRepository;
-    
-    
-    
+    private $pageRepository;
+
+
     /**
-     * 
+     * Constructor
+     *
      * @param PageRepository $pageRepository
      */
     public function __construct(PageRepository $pageRepository)
     {
         $this->pageRepository = $pageRepository;
     }
-    
+
     /**
-     * 
+     * Rebuilds the page cache (non-destructive)
+     *
+     * @return void
      */
     public function rebuildPageCache()
     {
-        foreach (Document_Page::getList() as $document) {
-            if ($document instanceof Document_Page && $document->isPublished()) {
+        foreach (Page::getList() as $document) {
+            if ($document instanceof Page && $document->isPublished()) {
                 $this->rebuildDocumentCache($document);
             }
         }
     }
-    
+
     /**
-     * 
-     * @param Document_Page $document
+     * Rebuild a specific document
+     *
+     * @param Page $document
+     *
+     * @return void
      */
-    protected function rebuildDocumentCache(Document_Page $document)
+    protected function rebuildDocumentCache(Page $document)
     {
         try {
             $this->pageRepository->save($document);
         } catch (Exception $ex) {
-            Logger::error("Failed to update document with ID: " . $document->getId());
+            Logger::error(sprintf("Failed to update document with ID: '%s'", $document->getId()));
             Logger::error($ex->getMessage());
         }
-        
     }
-    
 }

@@ -1,57 +1,43 @@
 <?php
-/**
- * PageProcessor.php
- * Definition of class PageProcessor
- * 
- * Created 16-Mar-2015 12:17:52
- *
- * @author M.D.Ward <matthew.ward@byng.co>
- * @copyright (c) 2015, Byng Services Ltd
- */
+
 namespace ElasticSearch\Processor\Page;
 
-use Document_Page;
-use Document_Tag;
 use ElasticSearch\Processor\ProcessorException;
-
-
+use Pimcore\Model\Document\Page;
+use Pimcore\Model\Document\Tag;
 
 /**
- * PageProcessor
- * 
- * @author M.D.Ward <matthew.ward@byng.co>
+ * Page Processor
+ *
+ * @author Elliot Wright <elliot@byng.co>
+ * @author Matt Ward <matt@byng.co>
  */
-class PageProcessor
+final class PageProcessor
 {
-    
     /**
-     *
      * @var ElementProcessor
      */
-    protected $elementProcessor;
-    
+    private $elementProcessor;
+
     /**
-     *
      * @var DateElementProcessor
      */
-    protected $dateElementProcessor;
-    
+    private $dateElementProcessor;
+
     /**
-     *
      * @var SelectElementProcessor
      */
-    protected $selectElementProcessor;
-    
+    private $selectElementProcessor;
+
     /**
-     *
      * @var HrefElementProcessor
      */
-    protected $hrefElementProcessor;
-    
-    
-    
+    private $hrefElementProcessor;
+
+
     /**
-     * 
+     * Constructor
+     *
      * @param ElementProcessor $elementProcessor
      * @param DateElementProcessor $dateElementProcessor
      * @param SelectElementProcessor $selectElementProcessor
@@ -68,84 +54,89 @@ class PageProcessor
         $this->selectElementProcessor = $selectElementProcessor;
         $this->hrefElementProcessor = $hrefElementProcessor;
     }
-    
+
     /**
-     * 
-     * @param Document_Page $document
+     * Process a page
+     *
+     * @param Page $document
+     *
      * @return array
      */
-    public function processPage(Document_Page $document)
+    public function processPage(Page $document)
     {
         $body = [
-            'controller'    =>  $document->getController(),
-            'action'        =>  $document->getAction(),
-            'created'       =>  $document->getCreationDate(),
-            'title'         =>  $document->getTitle(),
-            'description'   =>  $document->getDescription()
+            "controller" => $document->getController(),
+            "action" => $document->getAction(),
+            "created" => $document->getCreationDate(),
+            "title" => $document->getTitle(),
+            "description" => $document->getDescription()
         ];
-        
-        /* @var Document_Tag $element */
+
+        /* @var Tag $element */
         foreach ($document->getElements() as $key => $element) {
-            
-            if (!($element instanceof Document_Tag)) {
+            if (!($element instanceof Tag)) {
                 continue;
             }
-            
+
             try {
                 $this->processPageElement($body, $key, $element);
             } catch (ProcessorException $ex) {
                 continue;
             }
         }
-        
+
         return $body;
     }
-    
+
     /**
-     * 
+     * Process page element
+     *
      * @param array $body
      * @param string $elementKey
-     * @param Document_Tag $element
+     * @param Tag $element
      */
-    protected function processPageElement(
+    private function processPageElement(
         array &$body,
         $elementKey,
-        Document_Tag $element
+        Tag $element
     ) {
-        switch (ltrim(get_class($element), '\\')) {
-            case 'Document_Tag_Multihref':
+        switch (ltrim(get_class($element), "\\")) {
+            case "Document_Tag_Multihref":
+                /** @var Tag\Multihref $element */
                 $this->hrefElementProcessor->processElement(
                     $body,
                     $elementKey,
                     $element
                 );
                 return;
-            
-            case 'Document_Tag_Select':
+
+            case "Document_Tag_Select":
+                /** @var Tag\Select $element */
                 $this->selectElementProcessor->processElement(
                     $body,
                     $elementKey,
                     $element
                 );
                 return;
-                
-            case 'Document_Tag_Multiselect':
+
+            case "Document_Tag_Multiselect":
+                /** @var Tag\Multiselect $element */
                 $this->selectElementProcessor->processMultiSelectElement(
                     $body,
                     $elementKey,
                     $element
                 );
                 return;
-                
-            case 'Document_Tag_Date':
+
+            case "Document_Tag_Date":
+                /** @var Tag\Date $element */
                 $body[$elementKey] = $this->dateElementProcessor->processElement($element);
                 return;
-                
-            case 'Document_Tag':
+
+            case "Document_Tag":
             default:
                 $body[$elementKey] = $this->elementProcessor->processElement($element);
                 return;
         }
     }
-    
 }
