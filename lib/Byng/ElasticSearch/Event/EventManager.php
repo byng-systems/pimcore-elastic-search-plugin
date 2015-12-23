@@ -1,10 +1,10 @@
 <?php
 
-namespace ElasticSearch\Event;
+namespace Byng\ElasticSearch\Event;
 
+use Byng\ElasticSearch\Job\CacheAllPagesJob;
+use Byng\ElasticSearch\Repository\PageRepository;
 use Closure;
-use ElasticSearch\Job\CacheAllPagesJob;
-use ElasticSearch\Repository\PageRepository;
 use Pimcore\Model\Document\Page;
 use Pimcore\Model\Schedule\Maintenance\Job as MaintenanceJob;
 use Pimcore\Model\Schedule\Manager\Procedural as ProceduralScheduleManager;

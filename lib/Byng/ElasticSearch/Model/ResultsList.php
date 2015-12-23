@@ -1,6 +1,6 @@
 <?php
 
-namespace ElasticSearch\Model;
+namespace Byng\ElasticSearch\Model;
 
 use ArrayAccess;
 use BadMethodCallException;

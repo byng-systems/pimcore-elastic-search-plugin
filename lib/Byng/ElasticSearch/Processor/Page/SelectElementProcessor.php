@@ -1,8 +1,8 @@
 <?php
 
-namespace ElasticSearch\Processor\Page;
+namespace Byng\ElasticSearch\Processor\Page;
 
-use ElasticSearch\Filter\FilterInterface;
+use Byng\ElasticSearch\Filter\FilterInterface;
 use Pimcore\Model\Document\Tag\Multiselect;
 use Pimcore\Model\Document\Tag\Select;
 use Pimcore\Model\Object\AbstractObject;

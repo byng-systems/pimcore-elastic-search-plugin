@@ -1,9 +1,9 @@
 <?php
 
-namespace ElasticSearch\Processor\Page;
+namespace Byng\ElasticSearch\Processor\Page;
 
-use ElasticSearch\Filter\FilterInterface;
-use ElasticSearch\Filter\TagKeyFilter;
+use Byng\ElasticSearch\Filter\FilterInterface;
+use Byng\ElasticSearch\Filter\TagKeyFilter;
 use NF\HtmlToText;
 
 /**

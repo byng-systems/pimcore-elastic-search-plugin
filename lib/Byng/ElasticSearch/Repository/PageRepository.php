@@ -1,11 +1,11 @@
 <?php
 
-namespace ElasticSearch\Repository;
+namespace Byng\ElasticSearch\Repository;
 
+use Byng\ElasticSearch\Filter\FilterInterface;
+use Byng\ElasticSearch\Model\ResultsList;
+use Byng\ElasticSearch\Processor\Page\PageProcessor;
 use Elasticsearch\Client;
-use ElasticSearch\Filter\FilterInterface;
-use ElasticSearch\Model\ResultsList;
-use ElasticSearch\Processor\Page\PageProcessor;
 use InvalidArgumentException;
 use NF\HtmlToText;
 use Pimcore\Model\Document\Page;

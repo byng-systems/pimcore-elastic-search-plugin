@@ -1,6 +1,6 @@
 <?php
 
-namespace ElasticSearch\Filter;
+namespace Byng\ElasticSearch\Filter;
 
 /**
  * TagKeyFilter

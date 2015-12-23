@@ -1,8 +1,8 @@
 <?php
 
-namespace ElasticSearch\Job;
+namespace Byng\ElasticSearch\Job;
 
-use ElasticSearch\Repository\PageRepository;
+use Byng\ElasticSearch\Repository\PageRepository;
 use Exception;
 use Logger;
 use Pimcore\Model\Document\Page;

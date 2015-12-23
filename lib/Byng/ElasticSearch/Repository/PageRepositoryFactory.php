@@ -1,11 +1,11 @@
 <?php
 
-namespace ElasticSearch\Repository;
+namespace Byng\ElasticSearch\Repository;
 
+use Byng\ElasticSearch\Filter\FilterInterface;
+use Byng\ElasticSearch\Filter\TagKeyFilter;
+use Byng\ElasticSearch\Processor\Page\PageProcessorFactory;
 use Elasticsearch\Client;
-use ElasticSearch\Filter\FilterInterface;
-use ElasticSearch\Filter\TagKeyFilter;
-use ElasticSearch\Processor\Page\PageProcessorFactory;
 use NF\HtmlToText as HtmlToTextFilter;
 use Zend_Config_Xml;
 

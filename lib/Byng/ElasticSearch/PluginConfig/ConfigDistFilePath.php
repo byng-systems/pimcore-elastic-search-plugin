@@ -1,6 +1,6 @@
 <?php
 
-namespace ElasticSearch\PluginConfig;
+namespace Byng\ElasticSearch\PluginConfig;
 
 /**
  * Config Dist File Path

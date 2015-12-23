@@ -1,8 +1,8 @@
 <?php
 
-namespace ElasticSearch\Processor\Page;
+namespace Byng\ElasticSearch\Processor\Page;
 
-use ElasticSearch\Processor\ProcessorException;
+use Byng\ElasticSearch\Processor\ProcessorException;
 use Pimcore\Model\Document\Page;
 use Pimcore\Model\Document\Tag;
 

@@ -1,20 +1,20 @@
 {
-    "name": "pimcore/elastic-search",
+    "name": "byng/pimcore-elastic-search-plugin",
+    "description": "Elastic Search Pimcore plugin",
+    "version": "2.0.0",
     "type": "pimcore-plugin",
     "license": "BSD-3-Clause",
-    "description": "Elastic Search Pimcore plugin",
-    "keywords": ["pimcore", "elastic search", "plugin"],
-    "homepage": "http://byng.co",
+    "keywords": [ "pimcore", "elastic search", "plugin" ],
+    "homepage": "https://github.com/byng-systems/pimcore-elastic-search-plugin",
     "authors": [
         {
             "name": "Byng Systems",
             "email": "hello@byng.co",
-            "homepage": "http://byng.co",
-            "role": "Developer"
+            "homepage": "https://byng.co"
         }
     ],
     "require": {
-        "php": ">=5.3",
+        "php": ">=5.4",
         "pimcore/installer-plugin": ">=1",
         "elasticsearch/elasticsearch": "1.3.1",
         "nineteenfeet/nf-html-to-text": "~1.1"

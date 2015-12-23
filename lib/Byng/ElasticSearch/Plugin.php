@@ -1,10 +1,10 @@
 <?php
 
-use ElasticSearch\Event\EventManager as DocumentEventManager;
-use ElasticSearch\Job\CacheAllPagesJob;
-use ElasticSearch\PluginConfig\ConfigDistFilePath;
-use ElasticSearch\PluginConfig\ConfigFilePath;
-use ElasticSearch\Repository\PageRepositoryFactory;
+use Byng\ElasticSearch\Event\EventManager as DocumentEventManager;
+use Byng\ElasticSearch\Job\CacheAllPagesJob;
+use Byng\ElasticSearch\PluginConfig\ConfigDistFilePath;
+use Byng\ElasticSearch\PluginConfig\ConfigFilePath;
+use Byng\ElasticSearch\Repository\PageRepositoryFactory;
 use Pimcore\API\Plugin\AbstractPlugin;
 use Pimcore\API\Plugin\PluginInterface;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace ElasticSearch\Processor;
+namespace Byng\ElasticSearch\Processor;
 
 use UnexpectedValueException;
 
