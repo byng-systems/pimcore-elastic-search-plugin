@@ -2,7 +2,7 @@
 <zend-config xmlns:zf="http://framework.zend.com/xml/zend-config-xml/1.0/">
     <plugin>
         <!-- the plugin name [A-Za-z_] -->
-        <pluginName>ElasticSearch</pluginName>
+        <pluginName>Elasticsearch</pluginName>
 
         <!-- a short description -->
         <pluginDescription><![CDATA[]]></pluginDescription>
@@ -12,30 +12,30 @@
         <pluginRevision>1</pluginRevision>
         <pluginBuildTimestamp>0</pluginBuildTimestamp>
 
-        <!-- put in the URL for the plugin configuration eg. /plugin/ElasticSearch/admin/index -->
+        <!-- put in the URL for the plugin configuration eg. /plugin/Elasticsearch/admin/index -->
         <pluginIframeSrc />
 
         <!-- className of the plugin which extends Pimcore_API_Plugin_Abstract-->
-        <pluginClassName>ElasticSearchPlugin</pluginClassName>
+        <pluginClassName>ElasticsearchPlugin</pluginClassName>
 
         <!-- include paths relative to plugin-directory -->
         <pluginIncludePaths>
-            <path>/ElasticSearch/lib</path>
+            <path>/Elasticsearch/lib</path>
         </pluginIncludePaths>
 
         <!-- namespaces to register with autoloader-->
         <pluginNamespaces>
-            <namespace>ElasticSearch</namespace>
+            <namespace>Byng\Pimcore\Elasticsearch</namespace>
         </pluginNamespaces>
 
         <!-- js files with path relative to plugin-directory -->
         <pluginJsPaths>
-            <path>/plugins/ElasticSearch/static/js/startup.js</path>
+            <path>/plugins/Elasticsearch/static/js/startup.js</path>
         </pluginJsPaths>
 
         <!-- css files with path relative to plugin-directory -->
         <pluginCssPaths>
-            <path>/plugins/ElasticSearch/static/css/elasticsearch.css</path>
+            <path>/plugins/Elasticsearch/static/css/elasticsearch.css</path>
         </pluginCssPaths>
     </plugin>
 </zend-config>

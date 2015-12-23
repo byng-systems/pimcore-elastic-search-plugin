@@ -1,6 +1,6 @@
 <?php
 
-namespace Byng\ElasticSearch\Filter;
+namespace Byng\Pimcore\Elasticsearch\Filter;
 
 /**
  * TagKeyFilter

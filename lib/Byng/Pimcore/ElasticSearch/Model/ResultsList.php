@@ -1,6 +1,6 @@
 <?php
 
-namespace Byng\ElasticSearch\Model;
+namespace Byng\Pimcore\Elasticsearch\Model;
 
 use ArrayAccess;
 use BadMethodCallException;

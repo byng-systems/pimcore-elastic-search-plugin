@@ -1,10 +1,10 @@
 <?php
 
-namespace Byng\ElasticSearch\Repository;
+namespace Byng\Pimcore\Elasticsearch\Repository;
 
-use Byng\ElasticSearch\Filter\FilterInterface;
-use Byng\ElasticSearch\Model\ResultsList;
-use Byng\ElasticSearch\Processor\Page\PageProcessor;
+use Byng\Pimcore\Elasticsearch\Filter\FilterInterface;
+use Byng\Pimcore\Elasticsearch\Model\ResultsList;
+use Byng\Pimcore\Elasticsearch\Processor\Page\PageProcessor;
 use Elasticsearch\Client;
 use InvalidArgumentException;
 use NF\HtmlToText;
@@ -152,7 +152,7 @@ final class PageRepository
     }
 
     /**
-     * Executes an ElasticSearch "bool" query
+     * Executes an Elasticsearch "bool" query
      *
      * @param array $mustCriteria
      * @param array $shouldCriteria
@@ -292,7 +292,7 @@ final class PageRepository
     }
 
     /**
-     * Convert a page to an array usable by ElasticSearch
+     * Convert a page to an array usable by Elasticsearch
      *
      * @param Page $document
      *

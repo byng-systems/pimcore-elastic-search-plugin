@@ -1,6 +1,6 @@
 <?php
 
-namespace Byng\ElasticSearch\PluginConfig;
+namespace Byng\Pimcore\Elasticsearch\PluginConfig;
 
 /**
  * Config Dist File Path
@@ -21,7 +21,7 @@ final class ConfigDistFilePath
      */
     public function __construct()
     {
-        $this->filePath = PIMCORE_PLUGINS_PATH . "/ElasticSearch/config.xml.dist";
+        $this->filePath = PIMCORE_PLUGINS_PATH . "/Elasticsearch/config.xml.dist";
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace Byng\ElasticSearch\Processor\Page;
+namespace Byng\Pimcore\Elasticsearch\Processor\Page;
 
 use Pimcore\Model\Document\Tag\Date;
 

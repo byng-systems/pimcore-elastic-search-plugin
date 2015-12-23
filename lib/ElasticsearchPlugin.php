@@ -1,21 +1,21 @@
 <?php
 
-use Byng\ElasticSearch\Event\EventManager as DocumentEventManager;
-use Byng\ElasticSearch\Job\CacheAllPagesJob;
-use Byng\ElasticSearch\PluginConfig\ConfigDistFilePath;
-use Byng\ElasticSearch\PluginConfig\ConfigFilePath;
-use Byng\ElasticSearch\Repository\PageRepositoryFactory;
+use Byng\Pimcore\Elasticsearch\Event\EventManager as DocumentEventManager;
+use Byng\Pimcore\Elasticsearch\Job\CacheAllPagesJob;
+use Byng\Pimcore\Elasticsearch\PluginConfig\ConfigDistFilePath;
+use Byng\Pimcore\Elasticsearch\PluginConfig\ConfigFilePath;
+use Byng\Pimcore\Elasticsearch\Repository\PageRepositoryFactory;
 use Pimcore\API\Plugin\AbstractPlugin;
 use Pimcore\API\Plugin\PluginInterface;
 
 /**
- * ElasticSearch Pimcore Plugin
+ * Elasticsearch Pimcore Plugin
  *
  * @author Elliot Wright <elliot@byng.co>
  * @author Matt Ward <matt@byng.co>
  * @author Michal Maszkiewicz
  */
-final class ElasticSearchPlugin extends AbstractPlugin implements PluginInterface
+final class ElasticsearchPlugin extends AbstractPlugin implements PluginInterface
 {
     /**
      * {@inheritdoc}

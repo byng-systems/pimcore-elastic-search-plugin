@@ -1,6 +1,6 @@
 <?php
 
-namespace Byng\ElasticSearch\Processor;
+namespace Byng\Pimcore\Elasticsearch\Processor;
 
 use UnexpectedValueException;
 

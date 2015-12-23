@@ -1,1 +1,1 @@
-ElasticSearch Plugin works!
+Elasticsearch Plugin works!

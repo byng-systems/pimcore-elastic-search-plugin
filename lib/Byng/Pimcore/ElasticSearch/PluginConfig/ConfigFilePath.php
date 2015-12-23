@@ -1,6 +1,6 @@
 <?php
 
-namespace Byng\ElasticSearch\PluginConfig;
+namespace Byng\Pimcore\Elasticsearch\PluginConfig;
 
 /**
  * Config File Path

@@ -1,10 +1,10 @@
 <?php
 
-namespace Byng\ElasticSearch\Repository;
+namespace Byng\Pimcore\Elasticsearch\Repository;
 
-use Byng\ElasticSearch\Filter\FilterInterface;
-use Byng\ElasticSearch\Filter\TagKeyFilter;
-use Byng\ElasticSearch\Processor\Page\PageProcessorFactory;
+use Byng\Pimcore\Elasticsearch\Filter\FilterInterface;
+use Byng\Pimcore\Elasticsearch\Filter\TagKeyFilter;
+use Byng\Pimcore\Elasticsearch\Processor\Page\PageProcessorFactory;
 use Elasticsearch\Client;
 use NF\HtmlToText as HtmlToTextFilter;
 use Zend_Config_Xml;

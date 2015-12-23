@@ -1,9 +1,9 @@
 <?php
 
-namespace Byng\ElasticSearch\Event;
+namespace Byng\Pimcore\Elasticsearch\Event;
 
-use Byng\ElasticSearch\Job\CacheAllPagesJob;
-use Byng\ElasticSearch\Repository\PageRepository;
+use Byng\Pimcore\Elasticsearch\Job\CacheAllPagesJob;
+use Byng\Pimcore\Elasticsearch\Repository\PageRepository;
 use Closure;
 use Pimcore\Model\Document\Page;
 use Pimcore\Model\Schedule\Maintenance\Job as MaintenanceJob;

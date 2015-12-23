@@ -1,10 +1,10 @@
 {
-    "name": "byng/pimcore-elastic-search-plugin",
-    "description": "Elastic Search Pimcore plugin",
+    "name": "byng/pimcore-elasticsearch-plugin",
+    "description": "Elasticsearch Pimcore plugin",
     "version": "2.0.0",
     "type": "pimcore-plugin",
     "license": "BSD-3-Clause",
-    "keywords": [ "pimcore", "elastic search", "plugin" ],
+    "keywords": [ "pimcore", "elasticsearch", "plugin" ],
     "homepage": "https://github.com/byng-systems/pimcore-elastic-search-plugin",
     "authors": [
         {

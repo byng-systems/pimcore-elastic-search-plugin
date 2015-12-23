@@ -1,9 +1,9 @@
 <?php
 
-namespace Byng\ElasticSearch\Processor\Page;
+namespace Byng\Pimcore\Elasticsearch\Processor\Page;
 
-use Byng\ElasticSearch\Filter\FilterInterface;
-use Byng\ElasticSearch\Filter\TagKeyFilter;
+use Byng\Pimcore\Elasticsearch\Filter\FilterInterface;
+use Byng\Pimcore\Elasticsearch\Filter\TagKeyFilter;
 use NF\HtmlToText;
 
 /**

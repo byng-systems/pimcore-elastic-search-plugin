@@ -1,16 +1,15 @@
 <?php
 
+use Pimcore\Controller\Action\Admin as AdminAction;
+
 /**
- * Class ElasticSearch_IndexController
- * @author      Michal Maszkiewicz
- * @package     Plugin Controller
+ * Elasticsearch_IndexController
+ *
+ * @author Elliot Wright <elliot@elliotwright.co>
  */
-
-class ElasticSearch_IndexController extends Pimcore_Controller_Action_Admin
+class Elasticsearch_IndexController extends AdminAction
 {
-
     public function indexAction()
     {
-
     }
 }
