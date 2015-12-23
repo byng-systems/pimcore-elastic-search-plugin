@@ -74,7 +74,7 @@ final class ElasticsearchPlugin extends AbstractPlugin implements PluginInterfac
             return true;
         }
 
-        throw new RuntimeException("Unable to create a config file: " . $configPath);
+        throw new \RuntimeException("Unable to create a config file: " . $configPath);
     }
 
     /**
