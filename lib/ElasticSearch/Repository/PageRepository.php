@@ -308,5 +308,4 @@ final class PageRepository
             "timestamp" => $document->getModificationDate()
         ];
     }
-
 }

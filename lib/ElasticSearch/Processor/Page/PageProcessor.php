@@ -29,11 +29,6 @@ final class PageProcessor
      */
     private $selectElementProcessor;
 
-    /**
-     * @var HrefElementProcessor
-     */
-    private $hrefElementProcessor;
-
 
     /**
      * Constructor
@@ -41,18 +36,15 @@ final class PageProcessor
      * @param ElementProcessor $elementProcessor
      * @param DateElementProcessor $dateElementProcessor
      * @param SelectElementProcessor $selectElementProcessor
-     * @param HrefElementProcessor $hrefElementProcessor
      */
     public function __construct(
         ElementProcessor $elementProcessor,
         DateElementProcessor $dateElementProcessor,
-        SelectElementProcessor $selectElementProcessor,
-        HrefElementProcessor $hrefElementProcessor
+        SelectElementProcessor $selectElementProcessor
     ) {
         $this->elementProcessor = $elementProcessor;
         $this->dateElementProcessor = $dateElementProcessor;
         $this->selectElementProcessor = $selectElementProcessor;
-        $this->hrefElementProcessor = $hrefElementProcessor;
     }
 
     /**
@@ -101,15 +93,6 @@ final class PageProcessor
         Tag $element
     ) {
         switch (ltrim(get_class($element), "\\")) {
-            case "Document_Tag_Multihref":
-                /** @var Tag\Multihref $element */
-                $this->hrefElementProcessor->processElement(
-                    $body,
-                    $elementKey,
-                    $element
-                );
-                return;
-
             case "Document_Tag_Select":
                 /** @var Tag\Select $element */
                 $this->selectElementProcessor->processElement(

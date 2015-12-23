@@ -31,8 +31,7 @@ final class PageProcessorFactory
             new SelectElementProcessor(
                 ($filter ?: new TagKeyFilter()),
                 $elementProcessor
-            ),
-            new HrefElementProcessor(new ObjectTagProcessor(), $filter)
+            )
         );
     }
 }
