@@ -1,10 +1,14 @@
-Pimcore Elastic Search Plugin
-=============================
+# Pimcore Elasticsearch Plugin
 
-## What it does ##
+## What it does
 
-* Saves/updates contents (text only) of Document's editables to Elastic Search
+* Saves/updates contents (text only) of Document's editables to Elasticsearch
  
-## Configure ##
+## Configure
 
-/website/var/config/elasticsearchplugin.xml
+Copy the distribution config file (`elasticsearchplugin.xml.dist`) in the root of the plugin folder 
+to `{PIMCORE_WEBSITE_DIR}/var/config/elasticsearchplugin.xml`.
+
+## License
+
+MIT
