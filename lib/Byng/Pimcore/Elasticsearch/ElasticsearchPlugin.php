@@ -11,13 +11,17 @@
  * file that was distributed with this source code.
  */
 
+namespace Byng\Pimcore\Elasticsearch;
+
 use Byng\Pimcore\Elasticsearch\Event\EventManager as DocumentEventManager;
 use Byng\Pimcore\Elasticsearch\Job\CacheAllPagesJob;
 use Byng\Pimcore\Elasticsearch\PluginConfig\ConfigDistFilePath;
 use Byng\Pimcore\Elasticsearch\PluginConfig\ConfigFilePath;
 use Byng\Pimcore\Elasticsearch\Repository\PageRepositoryFactory;
+use Pimcore;
 use Pimcore\API\Plugin\AbstractPlugin;
 use Pimcore\API\Plugin\PluginInterface;
+use Zend_Config_Xml as XmlConfig;
 
 /**
  * Elasticsearch Pimcore Plugin
@@ -33,7 +37,7 @@ final class ElasticsearchPlugin extends AbstractPlugin implements PluginInterfac
      */
     public function init()
     {
-        $config = new Zend_Config_Xml(new ConfigFilePath());
+        $config = new XmlConfig(new ConfigFilePath());
         $repositoryFactory = new PageRepositoryFactory();
         $pageRepository = $repositoryFactory->build($config);
 
@@ -60,7 +64,7 @@ final class ElasticsearchPlugin extends AbstractPlugin implements PluginInterfac
         $configPath = new ConfigFilePath();
 
         if (!is_writable($configPath->getDirectory())) {
-            throw new RuntimeException(sprintf(
+            throw new \RuntimeException(sprintf(
                 "Unable to write to config directory: '%s'",
                 $configPath->getDirectory()
             ));
@@ -98,7 +102,7 @@ final class ElasticsearchPlugin extends AbstractPlugin implements PluginInterfac
                 return true;
             }
 
-            throw new RuntimeException(sprintf(
+            throw new \RuntimeException(sprintf(
                 "Config file exists, but is not writable: '%s'",
                 $configPath
             ));

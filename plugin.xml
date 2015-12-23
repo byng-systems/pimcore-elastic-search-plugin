@@ -16,7 +16,7 @@
         <pluginIframeSrc />
 
         <!-- className of the plugin which extends Pimcore_API_Plugin_Abstract-->
-        <pluginClassName>ElasticsearchPlugin</pluginClassName>
+        <pluginClassName>Byng\Pimcore\Elasticsearch\ElasticsearchPlugin</pluginClassName>
 
         <!-- include paths relative to plugin-directory -->
         <pluginIncludePaths>
