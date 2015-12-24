@@ -11,7 +11,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Byng\Pimcore\Elasticsearch\Processor\Page;
+namespace Byng\Pimcore\Elasticsearch\Processor\Element;
 
 use Byng\Pimcore\Elasticsearch\Filter\FilterInterface;
 use Pimcore\Model\Document\Tag\Multiselect;

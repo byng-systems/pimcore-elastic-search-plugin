@@ -13,6 +13,9 @@
 
 namespace Byng\Pimcore\Elasticsearch\Processor\Page;
 
+use Byng\Pimcore\Elasticsearch\Processor\Element\DateElementProcessor;
+use Byng\Pimcore\Elasticsearch\Processor\Element\ElementProcessor;
+use Byng\Pimcore\Elasticsearch\Processor\Element\SelectElementProcessor;
 use Byng\Pimcore\Elasticsearch\Processor\ProcessorException;
 use Pimcore\Model\Document\Page;
 use Pimcore\Model\Document\Tag;

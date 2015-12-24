@@ -16,7 +16,7 @@ namespace Byng\Pimcore\Elasticsearch\Repository;
 use Byng\Pimcore\Elasticsearch\Filter\FilterInterface;
 use Byng\Pimcore\Elasticsearch\Filter\TagKeyFilter;
 use Byng\Pimcore\Elasticsearch\Processor\Page\PageProcessorFactory;
-use Elasticsearch\Client;
+use Elasticsearch\ClientBuilder;
 use NF\HtmlToText as HtmlToTextFilter;
 use Zend_Config_Xml;
 
@@ -56,7 +56,7 @@ final class PageRepositoryFactory
         Zend_Config_Xml $configuration,
         FilterInterface $filter = null
     ) {
-        $elasticSearchClient = new Client([
+        $elasticSearchClient = ClientBuilder::fromConfig([
             "hosts" => $configuration->hosts->toArray()
         ]);
 
