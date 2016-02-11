@@ -13,7 +13,7 @@
 
 namespace Byng\Pimcore\Elasticsearch;
 
-use Byng\Pimcore\Elasticsearch\Event\EventManager as DocumentEventManager;
+use Byng\Pimcore\Elasticsearch\Event\DocumentEventManager;
 use Byng\Pimcore\Elasticsearch\Job\CacheAllPagesJob;
 use Byng\Pimcore\Elasticsearch\PluginConfig\ConfigDistFilePath;
 use Byng\Pimcore\Elasticsearch\PluginConfig\ConfigFilePath;
@@ -47,9 +47,7 @@ final class ElasticsearchPlugin extends AbstractPlugin implements PluginInterfac
             new CacheAllPagesJob($pageRepository)
         );
 
-        $documentEventManager->attachPostDelete();
-        $documentEventManager->attachPostUpdate();
-        $documentEventManager->attachMaintenance();
+        $documentEventManager->attachEvents();
     }
 
     /**

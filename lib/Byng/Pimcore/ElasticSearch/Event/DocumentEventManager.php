@@ -24,13 +24,13 @@ use Zend_EventManager_EventManager as ZendEventManager;
 use Zend_EventManager_Exception_InvalidArgumentException as ZendEventManagerInvalidArgumentException;
 
 /**
- * Event Manager
+ * Document Event Manager
  *
  * @author Elliot Wright <elliot@byng.co>
  * @author Matt Ward <matt@byng.co>
  * @author Michal Maszkiewicz
  */
-final class EventManager
+final class DocumentEventManager implements EventManagerInterface
 {
     const MAINTENANCE_JOB_REBUILD_PAGES = "elasticsearch-recache-pages";
 
@@ -65,6 +65,16 @@ final class EventManager
         $this->pimcoreEventManager = $pimcoreEventManager;
         $this->pageRepository = $pageRepository;
         $this->cacheAllPagesJob = $cacheAllPagesJob;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function attachEvents()
+    {
+        $this->attachPostDelete();
+        $this->attachPostUpdate();
+        $this->attachMaintenance();
     }
 
     /**
