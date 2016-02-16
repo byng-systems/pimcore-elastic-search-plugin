@@ -69,7 +69,13 @@ final class AssetProcessor
             }
         }
 
-        $body["type"] = $asset->getType();
+        $type = $asset->getType();
+
+        $body["type"] = $type;
+
+        if ($type === "document") {
+            $body["content"] = base64_encode(file_get_contents($asset->getFileSystemPath()));
+        }
 
         return $body;
     }
