@@ -31,8 +31,10 @@ use UnexpectedValueException;
  */
 final class PageGateway extends AbstractGateway
 {
-    const MATCH_QUERY_OPERATOR_AND = "and";
-    const MATCH_QUERY_OPERATOR_OR = "or";
+    /**
+     * @var PageGateway
+     */
+    private static $instance;
 
     /**
      * @var string
@@ -95,6 +97,8 @@ final class PageGateway extends AbstractGateway
         $this->htmlToTextFilter = $htmlToTextFilter;
         $this->processor = $processor;
         $this->inputFilter = $inputFilter;
+
+        static::$instance = $this;
     }
 
     /**
@@ -206,77 +210,6 @@ final class PageGateway extends AbstractGateway
         }
 
         return new ResultsList($documents, $result["hits"]["total"]);
-    }
-
-    /**
-     * Finds documents by text and term filters
-     *
-     * @param string $text
-     * @param array $filters
-     * @param array $negationFilters
-     * @param integer|null $offset
-     * @param integer|null $limit
-     * @param array $sorting
-     * @param array $additionalOptions
-     * @param string $matchOperator
-     *
-     * @return ResultsList
-     *
-     * @throws UnexpectedValueException
-     */
-    public function query(
-        $text,
-        array $filters = [],
-        array $negationFilters = [],
-        $offset = null,
-        $limit = null,
-        $sorting = [],
-        $additionalOptions = [],
-        $matchOperator = self::MATCH_QUERY_OPERATOR_AND
-    ) {
-        $mustCriteria = [];
-        $mustNotCriteria = [];
-
-        if (!empty($text)) {
-            switch ($matchOperator) {
-                case self::MATCH_QUERY_OPERATOR_AND:
-                case self::MATCH_QUERY_OPERATOR_OR:
-                    break;
-                default:
-                    throw new UnexpectedValueException(
-                        "Invalid query operator specified; expected one of: "and", "or""
-                    );
-            }
-
-            $mustCriteria[]["match"]["_all"] = [
-                "query" => (string) $text,
-                "operator" => $matchOperator
-            ];
-        }
-
-        foreach ($filters as $name => $term) {
-            $mustCriteria[]["terms"] = [
-                $name => (is_array($term) ? $term : [$this->inputFilter->filter($term)]),
-                "minimum_should_match" => 1
-            ];
-        }
-
-        foreach ($negationFilters as $name => $term) {
-            $mustNotCriteria[]["terms"] = [
-                $name => (is_array($term) ? $term : [$this->inputFilter->filter($term)]),
-                "minimum_should_match" => 1
-            ];
-        }
-
-        return $this->findBy(
-            $mustCriteria,
-            [],
-            $mustNotCriteria,
-            $offset,
-            $limit,
-            $sorting,
-            $additionalOptions
-        );
     }
 
     /**

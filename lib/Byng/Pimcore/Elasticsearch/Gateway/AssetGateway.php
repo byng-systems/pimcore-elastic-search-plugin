@@ -29,6 +29,11 @@ use Pimcore\Model\Asset;
 final class AssetGateway extends AbstractGateway
 {
     /**
+     * @var AssetGateway
+     */
+    private static $instance;
+
+    /**
      * @var string
      */
     private $index;
@@ -73,6 +78,22 @@ final class AssetGateway extends AbstractGateway
         $this->type = (string) $configuration["type"];
         $this->client = $client;
         $this->processor = $assetProcessor;
+
+        static::$instance = $this;
+    }
+
+    /**
+     * Get an instance of this gateway after plugin initialisation
+     *
+     * @return AssetGateway
+     */
+    public static function getInstance()
+    {
+        if (null === static::$instance) {
+            throw new \RuntimeException("No instance of AssetGateway available, did the Elasticsearch plugin initialise correctly?");
+        }
+
+        return static::$instance;
     }
 
     /**

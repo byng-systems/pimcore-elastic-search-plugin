@@ -22,9 +22,11 @@ use Byng\Pimcore\Elasticsearch\PluginConfig\ConfigDistFilePath;
 use Byng\Pimcore\Elasticsearch\PluginConfig\ConfigFilePath;
 use Byng\Pimcore\Elasticsearch\Gateway\PageGatewayFactory;
 use Byng\Pimcore\Elasticsearch\PluginConfig\ConfigSchemaPath;
+use Elasticsearch\ClientBuilder;
 use Pimcore;
 use Pimcore\API\Plugin\AbstractPlugin;
 use Pimcore\API\Plugin\PluginInterface;
+use Zend_Config;
 use Zend_Config_Xml as XmlConfig;
 
 /**
@@ -41,16 +43,11 @@ final class ElasticsearchPlugin extends AbstractPlugin implements PluginInterfac
      */
     public function init()
     {
-        $config = new \DOMDocument();
-        $config->load(new ConfigFilePath());
+        $config = self::loadConfig();
 
-        $isValid = $config->schemaValidate(new ConfigSchemaPath());
-
-        if (!$isValid) {
-            throw new \RuntimeException("Invalid Elasticsearch configuration.");
-        }
-
-        $config = new XmlConfig($config->saveXML());
+        $client = ClientBuilder::fromConfig([
+            "hosts" => $config->get("hosts")->toArray()
+        ]);
 
         if ($types = $config->get("types")) {
             $hosts = $config->get("hosts");
@@ -60,11 +57,7 @@ final class ElasticsearchPlugin extends AbstractPlugin implements PluginInterfac
                 $assetGatewayFactory = new AssetGatewayFactory();
                 $assetGateway = $assetGatewayFactory->build($hosts, $assetConfig);
 
-                $assetEventManager = new AssetEventManager(
-                    $eventManager,
-                    $assetGateway,
-                    new CacheAllAssetsJob($assetGateway)
-                );
+                $assetEventManager = new AssetEventManager($eventManager, $assetGateway, new CacheAllAssetsJob($assetGateway));
 
                 $assetEventManager->attachEvents();
             }
@@ -73,17 +66,11 @@ final class ElasticsearchPlugin extends AbstractPlugin implements PluginInterfac
                 $pageGatewayFactory = new PageGatewayFactory();
                 $pageGateway = $pageGatewayFactory->build($hosts, $pageConfig);
 
-                $documentEventManager = new DocumentEventManager(
-                    $eventManager,
-                    $pageGateway,
-                    new CacheAllPagesJob($pageGateway)
-                );
+                $documentEventManager = new DocumentEventManager($eventManager, $pageGateway, new CacheAllPagesJob($pageGateway));
 
                 $documentEventManager->attachEvents();
             }
         }
-
-
     }
 
     /**
@@ -93,6 +80,54 @@ final class ElasticsearchPlugin extends AbstractPlugin implements PluginInterfac
     {
         if (self::isInstalled()) {
             return true;
+        }
+
+        $config = self::loadConfig();
+
+        /** @var Zend_Config $types */
+        if ($types = $config->get("types")) {
+            $client = ClientBuilder::fromConfig([
+                "hosts" => $config->get("hosts")->toArray()
+            ]);
+
+            /** @var Zend_Config $assetConfig */
+            if ($assetConfig = $types->get("asset")) {
+                $indexParams = [
+                    "index" => $assetConfig->get("indexName")
+                ];
+
+                if (!$client->indices()->exists($indexParams)) {
+                    $client->indices()->create($indexParams);
+                }
+
+                $client->indices()->putMapping($indexParams + [
+                    "type" => $assetConfig->get("typeName"),
+                    "body" => [
+                        "asset" => [
+                            "properties" => [
+                                $assetConfig->get("typeName") => [
+                                    "properties" => [
+                                        $assetConfig->get("bodyContent")->get("propertyName") => [
+                                            "type" => "attachment"
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]);
+            }
+
+            /** @var Zend_Config $pageConfig */
+            if ($pageConfig = $types->get("page")) {
+                $indexParams = [
+                    "index" => $pageConfig->get("indexName")
+                ];
+
+                if (!$client->indices()->exists($indexParams)) {
+                    $client->indices()->create($indexParams);
+                }
+            }
         }
 
         $configPath = new ConfigFilePath();
@@ -143,5 +178,26 @@ final class ElasticsearchPlugin extends AbstractPlugin implements PluginInterfac
         }
 
         return false;
+    }
+
+    /**
+     * Load and validate the plugin configuration file.
+     *
+     * @return XmlConfig
+     *
+     * @throws \RuntimeException
+     */
+    private static function loadConfig()
+    {
+        $config = new \DOMDocument();
+        $config->load(new ConfigFilePath());
+
+        $isValid = $config->schemaValidate(new ConfigSchemaPath());
+
+        if (!$isValid) {
+            throw new \RuntimeException("Invalid Elasticsearch configuration.");
+        }
+
+        return new XmlConfig($config->saveXML());
     }
 }
