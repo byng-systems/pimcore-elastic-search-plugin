@@ -45,10 +45,6 @@ final class ElasticsearchPlugin extends AbstractPlugin implements PluginInterfac
     {
         $config = self::loadConfig();
 
-        $client = ClientBuilder::fromConfig([
-            "hosts" => $config->get("hosts")->toArray()
-        ]);
-
         if ($types = $config->get("types")) {
             $hosts = $config->get("hosts");
             $eventManager = Pimcore::getEventManager();
