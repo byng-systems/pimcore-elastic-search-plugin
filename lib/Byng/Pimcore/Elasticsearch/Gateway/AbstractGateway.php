@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the affinityship package.
+ * This file is part of the "byng/pimcore-elasticsearch-plugin" project.
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the LICENSE is distributed on an "AS IS" BASIS,

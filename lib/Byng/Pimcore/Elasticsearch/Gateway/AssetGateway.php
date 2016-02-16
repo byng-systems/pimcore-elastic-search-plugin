@@ -174,6 +174,12 @@ final class AssetGateway extends AbstractGateway
         $sorting = [],
         $additionalOptions = []
     ) {
+        $additionalOptions = array_merge($additionalOptions, [
+            "_source" => [
+                "exclude" => [ "*.content" ]
+            ]
+        ]);
+
         $result = $this->doSearch(
             $this->client,
             $this->index,
