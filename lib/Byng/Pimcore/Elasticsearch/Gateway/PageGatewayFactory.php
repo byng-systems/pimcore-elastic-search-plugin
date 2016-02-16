@@ -11,22 +11,22 @@
  * file that was distributed with this source code.
  */
 
-namespace Byng\Pimcore\Elasticsearch\Repository;
+namespace Byng\Pimcore\Elasticsearch\Gateway;
 
 use Byng\Pimcore\Elasticsearch\Filter\FilterInterface;
 use Byng\Pimcore\Elasticsearch\Filter\TagKeyFilter;
 use Byng\Pimcore\Elasticsearch\Processor\Page\PageProcessorFactory;
 use Elasticsearch\ClientBuilder;
 use NF\HtmlToText as HtmlToTextFilter;
-use Zend_Config_Xml;
+use Zend_Config;
 
 /**
- * PageRepository Factory
+ * PageGateway Factory
  *
  * @author Elliot Wright <elliot@byng.co>
  * @author Matt Ward <matt@byng.co>
  */
-final class PageRepositoryFactory
+final class PageGatewayFactory
 {
     /**
      * @var PageProcessorFactory
@@ -35,7 +35,7 @@ final class PageRepositoryFactory
 
 
     /**
-     * Constructor
+     * PageGatewayFactory constructor.
      *
      * @param PageProcessorFactory|null $processorFactory
      */
@@ -45,32 +45,34 @@ final class PageRepositoryFactory
     }
 
     /**
-     * Build the PageRepository
+     * Build the PageGateway
      *
-     * @param Zend_Config_Xml $configuration
+     * @param Zend_Config $hosts
+     * @param Zend_Config $configuration
      * @param FilterInterface|null $filter
      *
-     * @return PageRepository
+     * @return PageGateway
      */
     public function build(
-        Zend_Config_Xml $configuration,
+        Zend_Config $hosts,
+        Zend_Config $configuration,
         FilterInterface $filter = null
     ) {
-        $elasticSearchClient = ClientBuilder::fromConfig([
-            "hosts" => $configuration->hosts->toArray()
+        $client = ClientBuilder::fromConfig([
+            "hosts" => $hosts->toArray()
         ]);
 
-        $elasticSearchRepository = new PageRepository(
+        $gateway = new PageGateway(
             [
-                "index" => $configuration->index,
-                "type" => $configuration->type
+                "index" => $configuration->get("indexName"),
+                "type" => $configuration->get("typeName")
             ],
-            $elasticSearchClient,
+            $client,
             new HtmlToTextFilter(),
             $this->processorFactory->build(($filter = $filter ?: new TagKeyFilter())),
             $filter
         );
 
-        return $elasticSearchRepository;
+        return $gateway;
     }
 }

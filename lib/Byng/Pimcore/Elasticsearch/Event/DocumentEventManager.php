@@ -13,8 +13,8 @@
 
 namespace Byng\Pimcore\Elasticsearch\Event;
 
+use Byng\Pimcore\Elasticsearch\Gateway\PageGateway;
 use Byng\Pimcore\Elasticsearch\Job\CacheAllPagesJob;
-use Byng\Pimcore\Elasticsearch\Repository\PageRepository;
 use Closure;
 use Pimcore\Model\Document\Page;
 use Pimcore\Model\Schedule\Maintenance\Job as MaintenanceJob;
@@ -40,9 +40,9 @@ final class DocumentEventManager implements EventManagerInterface
     private $pimcoreEventManager;
 
     /**
-     * @var PageRepository
+     * @var PageGateway
      */
-    private $pageRepository;
+    private $pageGateway;
 
     /**
      * @var CacheAllPagesJob
@@ -54,16 +54,16 @@ final class DocumentEventManager implements EventManagerInterface
      * Constructor
      *
      * @param ZendEventManager $pimcoreEventManager
-     * @param PageRepository $pageRepository
+     * @param PageGateway $pageGateway
      * @param CacheAllPagesJob $cacheAllPagesJob
      */
     public function __construct(
         ZendEventManager $pimcoreEventManager,
-        PageRepository $pageRepository,
+        PageGateway $pageGateway,
         CacheAllPagesJob $cacheAllPagesJob
     ) {
         $this->pimcoreEventManager = $pimcoreEventManager;
-        $this->pageRepository = $pageRepository;
+        $this->pageGateway = $pageGateway;
         $this->cacheAllPagesJob = $cacheAllPagesJob;
     }
 
@@ -120,10 +120,10 @@ final class DocumentEventManager implements EventManagerInterface
 
             if ($document instanceof Page) {
                 if ($document->isPublished()) {
-                    $this->pageRepository->save($document);
+                    $this->pageGateway->save($document);
                 } else {
                     // When un-publishing a document remove it from the index
-                    $this->pageRepository->delete($document);
+                    $this->pageGateway->delete($document);
                 }
             }
         });
@@ -143,7 +143,7 @@ final class DocumentEventManager implements EventManagerInterface
             $document = $event->getTarget();
 
             if ($document instanceof Page) {
-                $this->pageRepository->delete($document);
+                $this->pageGateway->delete($document);
             }
         });
     }

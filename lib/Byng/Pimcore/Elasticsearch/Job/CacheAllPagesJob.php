@@ -13,13 +13,13 @@
 
 namespace Byng\Pimcore\Elasticsearch\Job;
 
-use Byng\Pimcore\Elasticsearch\Repository\PageRepository;
+use Byng\Pimcore\Elasticsearch\Gateway\PageGateway;
 use Exception;
 use Logger;
 use Pimcore\Model\Document\Page;
 
 /**
- * Description of CacheAllPagesJob
+ * Maintenance job to cache all Pages
  *
  * @author Elliot Wright <elliot@byng.co>
  * @author Matt Ward <matt@byng.co>
@@ -27,19 +27,19 @@ use Pimcore\Model\Document\Page;
 final class CacheAllPagesJob
 {
     /**
-     * @var PageRepository
+     * @var PageGateway
      */
-    private $pageRepository;
+    private $pageGateway;
 
 
     /**
      * Constructor
      *
-     * @param PageRepository $pageRepository
+     * @param PageGateway $pageGateway
      */
-    public function __construct(PageRepository $pageRepository)
+    public function __construct(PageGateway $pageGateway)
     {
-        $this->pageRepository = $pageRepository;
+        $this->pageGateway = $pageGateway;
     }
 
     /**
@@ -66,7 +66,7 @@ final class CacheAllPagesJob
     protected function rebuildDocumentCache(Page $document)
     {
         try {
-            $this->pageRepository->save($document);
+            $this->pageGateway->save($document);
         } catch (Exception $ex) {
             Logger::error(sprintf("Failed to update document with ID: '%s'", $document->getId()));
             Logger::error($ex->getMessage());

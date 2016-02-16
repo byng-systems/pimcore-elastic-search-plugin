@@ -14,15 +14,13 @@
 namespace Byng\Pimcore\Elasticsearch\PluginConfig;
 
 /**
- * Config File Path
+ * Config Schema Path
  *
- * @author Elliot Wright <elliot@byng.co>
- * @author Matt Ward <matt@byng.co>
- * @author Michal Maszkiewicz
+ * @author Elliot Wright <elliot@elliotwright.co>
  */
-final class ConfigFilePath
+final class ConfigSchemaPath
 {
-    const CONFIG_FILE_NAME = "elasticsearchplugin.xml";
+    const CONFIG_FILE_NAME = "elasticsearchplugin.xsd";
 
     /**
      * @var string
@@ -35,7 +33,7 @@ final class ConfigFilePath
      */
     public function __construct()
     {
-        $this->fullPath = PIMCORE_CONFIGURATION_DIRECTORY . "/" . self::CONFIG_FILE_NAME;
+        $this->fullPath = PIMCORE_PLUGINS_PATH . "/Elasticsearch/" . self::CONFIG_FILE_NAME;
     }
 
     /**
@@ -57,4 +55,5 @@ final class ConfigFilePath
     {
         return dirname($this->fullPath);
     }
+
 }

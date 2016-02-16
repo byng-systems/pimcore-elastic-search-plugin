@@ -13,11 +13,15 @@
 
 namespace Byng\Pimcore\Elasticsearch;
 
+use Byng\Pimcore\Elasticsearch\Event\AssetEventManager;
 use Byng\Pimcore\Elasticsearch\Event\DocumentEventManager;
+use Byng\Pimcore\Elasticsearch\Gateway\AssetGatewayFactory;
+use Byng\Pimcore\Elasticsearch\Job\CacheAllAssetsJob;
 use Byng\Pimcore\Elasticsearch\Job\CacheAllPagesJob;
 use Byng\Pimcore\Elasticsearch\PluginConfig\ConfigDistFilePath;
 use Byng\Pimcore\Elasticsearch\PluginConfig\ConfigFilePath;
-use Byng\Pimcore\Elasticsearch\Repository\PageRepositoryFactory;
+use Byng\Pimcore\Elasticsearch\Gateway\PageGatewayFactory;
+use Byng\Pimcore\Elasticsearch\PluginConfig\ConfigSchemaPath;
 use Pimcore;
 use Pimcore\API\Plugin\AbstractPlugin;
 use Pimcore\API\Plugin\PluginInterface;
@@ -37,17 +41,49 @@ final class ElasticsearchPlugin extends AbstractPlugin implements PluginInterfac
      */
     public function init()
     {
-        $config = new XmlConfig(new ConfigFilePath());
-        $repositoryFactory = new PageRepositoryFactory();
-        $pageRepository = $repositoryFactory->build($config);
+        $config = new \DOMDocument();
+        $config->load(new ConfigFilePath());
 
-        $documentEventManager = new DocumentEventManager(
-            Pimcore::getEventManager(),
-            $pageRepository,
-            new CacheAllPagesJob($pageRepository)
-        );
+        $isValid = $config->schemaValidate(new ConfigSchemaPath());
 
-        $documentEventManager->attachEvents();
+        if (!$isValid) {
+            throw new \RuntimeException("Invalid Elasticsearch configuration.");
+        }
+
+        $config = new XmlConfig($config->saveXML());
+
+        if ($types = $config->get("types")) {
+            $hosts = $config->get("hosts");
+            $eventManager = Pimcore::getEventManager();
+
+            if ($assetConfig = $types->get("asset")) {
+                $assetGatewayFactory = new AssetGatewayFactory();
+                $assetGateway = $assetGatewayFactory->build($hosts, $assetConfig);
+
+                $assetEventManager = new AssetEventManager(
+                    $eventManager,
+                    $assetGateway,
+                    new CacheAllAssetsJob($assetGateway)
+                );
+
+                $assetEventManager->attachEvents();
+            }
+
+            if ($pageConfig = $types->get("page")) {
+                $pageGatewayFactory = new PageGatewayFactory();
+                $pageGateway = $pageGatewayFactory->build($hosts, $pageConfig);
+
+                $documentEventManager = new DocumentEventManager(
+                    $eventManager,
+                    $pageGateway,
+                    new CacheAllPagesJob($pageGateway)
+                );
+
+                $documentEventManager->attachEvents();
+            }
+        }
+
+
     }
 
     /**

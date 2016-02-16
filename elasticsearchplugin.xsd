@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+    <xs:complexType name="HostList">
+        <xs:sequence>
+            <xs:element name="host" type="xs:string" minOccurs="1" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="TypeList">
+        <xs:all>
+            <xs:element name="page" type="PageType" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="asset" type="AssetType" minOccurs="0" maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="Type">
+        <xs:attribute name="indexName" type="xs:string" use="required"/>
+        <xs:attribute name="typeName" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="PageType">
+        <xs:complexContent>
+            <xs:extension base="Type"/>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="AssetType">
+        <xs:complexContent>
+            <xs:extension base="Type">
+                <xs:all>
+                    <xs:element name="bodyContent" minOccurs="1" maxOccurs="1">
+                        <xs:complexType>
+                            <xs:attribute name="propertyName" type="xs:string" use="required"/>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:all>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:element name="configdata">
+        <xs:complexType>
+            <xs:all>
+                <xs:element name="hosts" type="HostList" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="types" type="TypeList" minOccurs="1" maxOccurs="1"/>
+            </xs:all>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

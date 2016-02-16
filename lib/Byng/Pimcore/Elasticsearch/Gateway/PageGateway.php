@@ -11,7 +11,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Byng\Pimcore\Elasticsearch\Repository;
+namespace Byng\Pimcore\Elasticsearch\Gateway;
 
 use Byng\Pimcore\Elasticsearch\Filter\FilterInterface;
 use Byng\Pimcore\Elasticsearch\Model\ResultsList;
@@ -23,13 +23,13 @@ use Pimcore\Model\Document\Page;
 use UnexpectedValueException;
 
 /**
- * Page Repository
+ * Page Gateway
  *
  * @author Elliot Wright <elliot@byng.co>
  * @author Matt Ward <matt@byng.co>
  * @author Michal Maszkiewicz
  */
-final class PageRepository
+final class PageGateway extends AbstractGateway
 {
     const MATCH_QUERY_OPERATOR_AND = "and";
     const MATCH_QUERY_OPERATOR_OR = "or";
@@ -163,60 +163,37 @@ final class PageRepository
     }
 
     /**
-     * Executes an Elasticsearch "bool" query
-     *
-     * @param array $mustCriteria
-     * @param array $shouldCriteria
-     * @param array $mustNotCriteria
-     * @param integer|null $offset
-     * @param integer|null $limit
-     * @param array $sorting
-     * @param array $additionalOptions
-     *
-     * @return ResultsList
+     * {@inheritdoc}
      */
     public function findBy(
         array $mustCriteria = [],
-        array $shouldCriteria = [],
+        array $filterCriteria = [],
         array $mustNotCriteria = [],
+        array $shouldCriteria = [],
         $offset = null,
         $limit = null,
         $sorting = [],
         $additionalOptions = []
     ) {
-        $body = $additionalOptions + [
-            "query" => [
-                "bool" => [
-                    "must" => $mustCriteria,
-                    "should" => $shouldCriteria,
-                    "must_not" => $mustNotCriteria
-                ]
-            ],
-        ];
-
-        foreach ([ "offset", "limit" ] as $constraint) {
-            $constraintValue = $$constraint;
-
-            if ($constraintValue !== null) {
-                $body[$constraint] = $constraintValue;
-            }
-        }
-
-        if (!empty($sorting)) {
-            $body["sort"] = $sorting;
-        }
-
-        $result = $this->client->search([
-            "index" => $this->index,
-            "type" => $this->type,
-            "body" => $body
-        ]);
-
-        $documents = [];
+        $result = $this->doSearch(
+            $this->client,
+            $this->index,
+            $this->type,
+            $mustCriteria,
+            $filterCriteria,
+            $mustNotCriteria,
+            $shouldCriteria,
+            $offset,
+            $limit,
+            $sorting,
+            $additionalOptions
+        );
 
         if (!isset($result["hits"]["hits"])) {
-            return [];
+            return new ResultsList([], 0);
         }
+
+        $documents = [];
 
         // Fetch list of documents based on results from Elastic Search
         // TODO optimize to use list
@@ -313,7 +290,9 @@ final class PageRepository
     {
         return [
             "id" => $document->getId(),
-            "body" => [ "doc" => $this->processor->processPage($document) ],
+            "body" => [
+                "page" => $this->processor->processPage($document)
+            ],
             "index" => $this->index,
             "type" => $this->type,
             "timestamp" => $document->getModificationDate()
