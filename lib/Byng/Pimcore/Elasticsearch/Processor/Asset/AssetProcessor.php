@@ -65,7 +65,10 @@ final class AssetProcessor
                 $name = $property->getName();
                 $value = $property->getData() ?: $name;
 
+                $parsed = preg_replace("/(-|_|\\.|,|;|:)/", " ", $value);
+
                 $body["properties"][$name] = $value;
+                $body["properties_parsed"][$name] = $parsed;
             }
         }
 
