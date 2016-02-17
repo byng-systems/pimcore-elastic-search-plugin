@@ -12,7 +12,7 @@
         <pluginRevision>1</pluginRevision>
         <pluginBuildTimestamp>0</pluginBuildTimestamp>
 
-        <!-- put in the URL for the plugin configuration eg. /plugin/Elasticsearch/admin/index -->
+        <!-- put in the URL for the plugin configuration eg. /plugin/PimcoreElasticsearchPlugin/admin/index -->
         <pluginIframeSrc />
 
         <!-- className of the plugin which extends Pimcore_API_Plugin_Abstract-->
