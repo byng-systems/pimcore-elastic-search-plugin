@@ -32,7 +32,7 @@ final class ConfigDistFilePath
      */
     public function __construct()
     {
-        $this->filePath = PIMCORE_PLUGINS_PATH . "/Elasticsearch/elasticsearchplugin.xml.dist";
+        $this->filePath = PIMCORE_PLUGINS_PATH . "/PimcoreElasticsearchPlugin/elasticsearchplugin.xml.dist";
     }
 
     /**

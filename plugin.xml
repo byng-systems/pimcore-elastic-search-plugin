@@ -2,7 +2,7 @@
 <zend-config xmlns:zf="http://framework.zend.com/xml/zend-config-xml/1.0/">
     <plugin>
         <!-- the plugin name [A-Za-z_] -->
-        <pluginName>Elasticsearch</pluginName>
+        <pluginName>PimcoreElasticsearchPlugin</pluginName>
 
         <!-- a short description -->
         <pluginDescription><![CDATA[]]></pluginDescription>
@@ -20,7 +20,7 @@
 
         <!-- include paths relative to plugin-directory -->
         <pluginIncludePaths>
-            <path>/Elasticsearch/lib</path>
+            <path>/PimcoreElasticsearchPlugin/lib</path>
         </pluginIncludePaths>
 
         <!-- namespaces to register with autoloader-->
@@ -30,12 +30,12 @@
 
         <!-- js files with path relative to plugin-directory -->
         <pluginJsPaths>
-            <path>/plugins/Elasticsearch/static/js/startup.js</path>
+            <path>/plugins/PimcoreElasticsearchPlugin/static/js/startup.js</path>
         </pluginJsPaths>
 
         <!-- css files with path relative to plugin-directory -->
         <pluginCssPaths>
-            <path>/plugins/Elasticsearch/static/css/elasticsearch.css</path>
+            <path>/plugins/PimcoreElasticsearchPlugin/static/css/elasticsearch.css</path>
         </pluginCssPaths>
     </plugin>
 </zend-config>

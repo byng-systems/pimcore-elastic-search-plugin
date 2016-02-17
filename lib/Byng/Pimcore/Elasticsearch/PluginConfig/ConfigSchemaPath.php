@@ -33,7 +33,7 @@ final class ConfigSchemaPath
      */
     public function __construct()
     {
-        $this->fullPath = PIMCORE_PLUGINS_PATH . "/Elasticsearch/" . self::CONFIG_FILE_NAME;
+        $this->fullPath = PIMCORE_PLUGINS_PATH . "/PimcoreElasticsearchPlugin/" . self::CONFIG_FILE_NAME;
     }
 
     /**
