@@ -3,6 +3,7 @@
 namespace ElasticSearch\Job;
 
 use Document_Page;
+use Document_List;
 use ElasticSearch\Repository\PageRepository;
 use Exception;
 use Logger;
@@ -47,13 +48,13 @@ class CacheAllPagesJob
     {
         $documentCount = Document_Page::getTotalCount();
 
-        for ($documentIndex = 0; $documentIndex < $documentCount; $documentIndex += self::PAGE_PROCESSING_LIMIT) {
-            $documents = Document_Page::getList([
-                "limit" => self::PAGE_PROCESSING_LIMIT,
-                "offset" => $documentIndex
-            ]);
+        for ($documentIndex = 0; $documentIndex < $documentCount; $documentIndex = $documentIndex + self::PAGE_PROCESSING_LIMIT) {
+            $documentListing = new Document_List();
+            $documentListing->setOffset($documentIndex);
+            $documentListing->setLimit(self::PAGE_PROCESSING_LIMIT);
+            $documentListing->setCondition("type = ?", [ "page" ]);
 
-            foreach ($documents as $document) {
+            foreach ($documentListing->load() as $document) {
                 if ($document instanceof Document_Page && $document->isPublished()) {
                     $this->rebuildDocumentCache($document);
                 }
