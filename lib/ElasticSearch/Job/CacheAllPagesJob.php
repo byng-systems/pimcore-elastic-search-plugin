@@ -1,11 +1,5 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace ElasticSearch\Job;
 
 use Document_Page;
@@ -13,48 +7,66 @@ use ElasticSearch\Repository\PageRepository;
 use Exception;
 use Logger;
 
-
-
 /**
- * Description of CacheAllPagesJob
+ * Class CacheAllPagesJob
  *
- * @author matt
+ * A job to cache all pages in the Pimcore Document structure.
+ *
+ * @author Matt Ward <matt@byng.co>
+ * @author Callum Jones <callum@byng.co>
  */
 class CacheAllPagesJob
 {
-    
     /**
+     * Number of pages to process at once
      *
-     * @var PageRepository 
+     * @var int
+     */
+    const PAGE_PROCESSING_LIMIT = 100;
+
+    /**
+     * @var PageRepository
      */
     protected $pageRepository;
-    
-    
-    
+
     /**
-     * 
+     * CacheAllPagesJob constructor.
      * @param PageRepository $pageRepository
      */
     public function __construct(PageRepository $pageRepository)
     {
         $this->pageRepository = $pageRepository;
     }
-    
+
     /**
-     * 
+     * Rebuild all page caches.
+     *
+     * @return void
      */
     public function rebuildPageCache()
     {
-        foreach (Document_Page::getList() as $document) {
-            if ($document instanceof Document_Page && $document->isPublished()) {
-                $this->rebuildDocumentCache($document);
+        $documentCount = Document_Page::getTotalCount();
+
+        for ($documentIndex = 0; $documentIndex < $documentCount; $documentIndex += self::PAGE_PROCESSING_LIMIT) {
+            $documents = Document_Page::getList([
+                "limit" => self::PAGE_PROCESSING_LIMIT,
+                "offset" => $documentIndex
+            ]);
+
+            foreach ($documents as $document) {
+                if ($document instanceof Document_Page && $document->isPublished()) {
+                    $this->rebuildDocumentCache($document);
+                }
             }
         }
     }
-    
+
     /**
-     * 
+     * Rebuild the document cache of a specific document.
+     *
      * @param Document_Page $document
+     *
+     * @return void
      */
     protected function rebuildDocumentCache(Document_Page $document)
     {
@@ -64,7 +76,5 @@ class CacheAllPagesJob
             Logger::error("Failed to update document with ID: " . $document->getId());
             Logger::error($ex->getMessage());
         }
-        
     }
-    
 }
