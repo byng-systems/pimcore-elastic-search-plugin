@@ -48,7 +48,7 @@ class CacheAllPagesJob
     {
         $documentCount = Document_Page::getTotalCount();
 
-        for ($documentIndex = 0; $documentIndex < $documentCount; $documentIndex = $documentIndex + self::PAGE_PROCESSING_LIMIT) {
+        for ($documentIndex = 0; $documentIndex < $documentCount; $documentIndex += self::PAGE_PROCESSING_LIMIT) {
             $documentListing = new Document_List();
             $documentListing->setOffset($documentIndex);
             $documentListing->setLimit(self::PAGE_PROCESSING_LIMIT);
