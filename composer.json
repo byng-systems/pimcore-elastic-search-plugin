@@ -1,7 +1,7 @@
 {
     "name": "byng/pimcore-elasticsearch-plugin",
     "description": "Elasticsearch Pimcore plugin",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "type": "pimcore-plugin",
     "license": "BSD-3-Clause",
     "keywords": ["pimcore", "elastic search", "plugin"],
