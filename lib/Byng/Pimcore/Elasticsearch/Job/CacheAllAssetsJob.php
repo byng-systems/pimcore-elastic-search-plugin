@@ -26,6 +26,13 @@ use Pimcore\Model\Asset;
 final class CacheAllAssetsJob
 {
     /**
+     * Number of pages to process at once
+     *
+     * @var int
+     */
+    const PAGE_PROCESSING_LIMIT = 100;
+
+    /**
      * @var AssetGateway
      */
     private $assetGateway;
@@ -48,9 +55,18 @@ final class CacheAllAssetsJob
      */
     public function rebuildAssetsCache()
     {
-        foreach (Asset::getList() as $asset) {
-            if ($asset instanceof Asset) {
-                $this->rebuildAssetCache($asset);
+        $assetCount = Asset::getTotalCount();
+
+        for ($assetIndex = 0; $assetIndex < $assetCount; $assetIndex += self::PAGE_PROCESSING_LIMIT) {
+            $assetListing = new Asset\Listing();
+            $assetListing->setOffset($assetIndex);
+            $assetListing->setLimit(self::PAGE_PROCESSING_LIMIT);
+            $assetListing->setCondition("type = ?", [ "asset" ]);
+
+            foreach ($assetListing->load() as $asset) {
+                if ($asset instanceof Asset) {
+                    $this->rebuildAssetCache($asset);
+                }
             }
         }
     }
