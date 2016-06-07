@@ -16,12 +16,14 @@ namespace Byng\Pimcore\Elasticsearch\Gateway;
 use Byng\Pimcore\Elasticsearch\Processor\Asset\AssetProcessor;
 use Elasticsearch\ClientBuilder;
 use Zend_Config;
+use Pimcore;
 
 /**
  * AssetGateway Factory
  *
  * @author Elliot Wright <elliot@byng.co>
  * @author Matt Ward <matt@byng.co>
+ * @author Asim Liaquat <asim@byng.co>
  */
 final class AssetGatewayFactory
 {
@@ -45,7 +47,8 @@ final class AssetGatewayFactory
                 "type" => $configuration->get("typeName")
             ],
             $client,
-            new AssetProcessor()
+            new AssetProcessor(),
+            Pimcore::getEventManager()
         );
 
         return $gateway;

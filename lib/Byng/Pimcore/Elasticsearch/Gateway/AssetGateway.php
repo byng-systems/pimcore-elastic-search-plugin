@@ -18,6 +18,7 @@ use Byng\Pimcore\Elasticsearch\Processor\Asset\AssetProcessor;
 use Elasticsearch\Client;
 use InvalidArgumentException;
 use Pimcore\Model\Asset;
+use Zend_EventManager_EventManager as ZendEventManager;
 
 /**
  * Asset Gateway
@@ -25,6 +26,7 @@ use Pimcore\Model\Asset;
  * @author Elliot Wright <elliot@byng.co>
  * @author Matt Ward <matt@byng.co>
  * @author Michal Maszkiewicz
+ * @author Asim Liaquat <asim@byng.co>
  */
 final class AssetGateway extends AbstractGateway
 {
@@ -53,18 +55,24 @@ final class AssetGateway extends AbstractGateway
      */
     private $processor;
 
+    /**
+     * @var ZendEventManager
+     */
+    private $pimcoreEventManager;
 
     /**
      * Constructor
      *
-     * @param array          $configuration
-     * @param Client         $client
-     * @param AssetProcessor $assetProcessor
+     * @param array            $configuration
+     * @param Client           $client
+     * @param AssetProcessor   $assetProcessor
+     * @param ZendEventManager $pimcoreEventManager
      */
     public function __construct(
         array $configuration,
         Client $client,
-        AssetProcessor $assetProcessor
+        AssetProcessor $assetProcessor,
+        ZendEventManager $pimcoreEventManager
     ) {
         if (!isset($configuration["index"])) {
             throw new InvalidArgumentException("Missing configuration setting: index");
@@ -78,6 +86,7 @@ final class AssetGateway extends AbstractGateway
         $this->type = (string) $configuration["type"];
         $this->client = $client;
         $this->processor = $assetProcessor;
+        $this->pimcoreEventManager = $pimcoreEventManager;
 
         static::$instance = $this;
     }
@@ -140,7 +149,13 @@ final class AssetGateway extends AbstractGateway
      */
     public function save(Asset $asset)
     {
-        $this->client->index($this->assetToArray($asset));
+        $assetArray = $this->pimcoreEventManager->prepareArgs(
+            $this->assetToArray($asset)
+        );
+        
+        $this->pimcoreEventManager->trigger("asset.elasticsearch.preIndex", $this, $assetArray);
+        
+        $this->client->index($assetArray->getArrayCopy());
     }
 
     /**
