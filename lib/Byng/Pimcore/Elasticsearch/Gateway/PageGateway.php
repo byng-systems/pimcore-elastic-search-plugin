@@ -102,6 +102,20 @@ final class PageGateway extends AbstractGateway
     }
 
     /**
+     * Get an instance of this gateway after plugin initialisation
+     *
+     * @return PageGateway
+     */
+    public static function getInstance()
+    {
+        if (null === static::$instance) {
+            throw new \RuntimeException("No instance of PageGateway available, did the Elasticsearch plugin initialise correctly?");
+        }
+
+        return static::$instance;
+    }
+
+    /**
      * Delete a given document
      *
      * @param Page $document
