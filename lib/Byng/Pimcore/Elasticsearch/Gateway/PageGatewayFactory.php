@@ -19,12 +19,14 @@ use Byng\Pimcore\Elasticsearch\Processor\Page\PageProcessorFactory;
 use Elasticsearch\ClientBuilder;
 use NF\HtmlToText as HtmlToTextFilter;
 use Zend_Config;
+use Pimcore;
 
 /**
  * PageGateway Factory
  *
  * @author Elliot Wright <elliot@byng.co>
  * @author Matt Ward <matt@byng.co>
+ * @author Asim Liaquat <asim@byng.co>
  */
 final class PageGatewayFactory
 {
@@ -70,7 +72,8 @@ final class PageGatewayFactory
             $client,
             new HtmlToTextFilter(),
             $this->processorFactory->build(($filter = $filter ?: new TagKeyFilter())),
-            $filter
+            $filter,
+            Pimcore::getEventManager()
         );
 
         return $gateway;

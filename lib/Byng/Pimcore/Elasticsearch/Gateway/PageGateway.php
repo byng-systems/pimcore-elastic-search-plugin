@@ -20,7 +20,7 @@ use Elasticsearch\Client;
 use InvalidArgumentException;
 use NF\HtmlToText;
 use Pimcore\Model\Document\Page;
-use UnexpectedValueException;
+use Zend_EventManager_EventManager as ZendEventManager;
 
 /**
  * Page Gateway
@@ -28,6 +28,7 @@ use UnexpectedValueException;
  * @author Elliot Wright <elliot@byng.co>
  * @author Matt Ward <matt@byng.co>
  * @author Michal Maszkiewicz
+ * @author Asim Liaquat <asim@byng.co>
  */
 final class PageGateway extends AbstractGateway
 {
@@ -66,6 +67,10 @@ final class PageGateway extends AbstractGateway
      */
     private $inputFilter;
 
+    /**
+     * @var ZendEventManager
+     */
+    private $pimcoreEventManager;
 
     /**
      * Constructor
@@ -75,13 +80,15 @@ final class PageGateway extends AbstractGateway
      * @param HtmlToText $htmlToTextFilter
      * @param PageProcessor $processor
      * @param FilterInterface $inputFilter
+     * @param ZendEventManager $pimcoreEventManager
      */
     public function __construct(
         array $configuration,
         Client $client,
         HtmlToText $htmlToTextFilter,
         PageProcessor $processor,
-        FilterInterface $inputFilter
+        FilterInterface $inputFilter,
+        ZendEventManager $pimcoreEventManager
     ) {
         if (!isset($configuration["index"])) {
             throw new InvalidArgumentException("Missing configuration setting: index");
@@ -97,6 +104,7 @@ final class PageGateway extends AbstractGateway
         $this->htmlToTextFilter = $htmlToTextFilter;
         $this->processor = $processor;
         $this->inputFilter = $inputFilter;
+        $this->pimcoreEventManager = $pimcoreEventManager;
 
         static::$instance = $this;
     }
@@ -145,7 +153,13 @@ final class PageGateway extends AbstractGateway
      */
     public function save(Page $document)
     {
-        $this->client->index($this->pageToArray($document));
+        $pageArray = $this->pimcoreEventManager->prepareArgs(
+            $this->pageToArray($document)        
+        );
+        
+        $this->pimcoreEventManager->trigger("document.elasticsearch.preIndex", $this, $pageArray);
+        
+        $this->client->index($pageArray->getArrayCopy());
     }
 
     /**
