@@ -17,6 +17,7 @@ use Byng\Pimcore\Elasticsearch\Gateway\PageGateway;
 use Exception;
 use Logger;
 use Pimcore\Model\Document\Page;
+use Pimcore\Model\Document\Listing as DocumentListing;
 
 /**
  * Maintenance job to cache all Pages
@@ -26,6 +27,13 @@ use Pimcore\Model\Document\Page;
  */
 final class CacheAllPagesJob
 {
+    /**
+     * Number of pages to process at once
+     *
+     * @var int
+     */
+    const PAGE_PROCESSING_LIMIT = 100;
+
     /**
      * @var PageGateway
      */
@@ -49,9 +57,18 @@ final class CacheAllPagesJob
      */
     public function rebuildPageCache()
     {
-        foreach (Page::getList() as $document) {
-            if ($document instanceof Page && $document->isPublished()) {
-                $this->rebuildDocumentCache($document);
+        $documentCount = Page::getTotalCount();
+
+        for ($documentIndex = 0; $documentIndex < $documentCount; $documentIndex += self::PAGE_PROCESSING_LIMIT) {
+            $documentListing = new DocumentListing();
+            $documentListing->setOffset($documentIndex);
+            $documentListing->setLimit(self::PAGE_PROCESSING_LIMIT);
+            $documentListing->setCondition("type = ?", [ "page" ]);
+
+            foreach ($documentListing->load() as $document) {
+                if ($document instanceof Page && $document->isPublished()) {
+                    $this->rebuildDocumentCache($document);
+                }
             }
         }
     }
