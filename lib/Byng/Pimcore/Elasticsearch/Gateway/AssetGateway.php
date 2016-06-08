@@ -152,9 +152,9 @@ final class AssetGateway extends AbstractGateway
         $assetArray = $this->pimcoreEventManager->prepareArgs(
             $this->assetToArray($asset)
         );
-        
-        $this->pimcoreEventManager->trigger("asset.elasticsearch.preIndex", $this, $assetArray);
-        
+
+        $this->pimcoreEventManager->trigger("asset.elasticsearch.preIndex", $asset, $assetArray);
+
         $this->client->index($assetArray->getArrayCopy());
     }
 

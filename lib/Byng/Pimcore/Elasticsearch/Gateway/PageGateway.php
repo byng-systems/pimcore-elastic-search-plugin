@@ -168,11 +168,11 @@ final class PageGateway extends AbstractGateway
     public function save(Page $document)
     {
         $pageArray = $this->pimcoreEventManager->prepareArgs(
-            $this->pageToArray($document)        
+            $this->pageToArray($document)
         );
-        
-        $this->pimcoreEventManager->trigger("document.elasticsearch.preIndex", $this, $pageArray);
-        
+
+        $this->pimcoreEventManager->trigger("document.elasticsearch.preIndex", $document, $pageArray);
+
         $this->client->index($pageArray->getArrayCopy());
     }
 
