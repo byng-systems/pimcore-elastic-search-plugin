@@ -186,8 +186,9 @@ final class AssetGateway extends AbstractGateway
         array $shouldCriteria = [],
         $offset = null,
         $limit = null,
-        $sorting = [],
-        $additionalOptions = []
+        array $sorting = [],
+        array $additionalOptions = [],
+        array $resultOptions = []
     ) {
         $additionalOptions = array_merge($additionalOptions, [
             "_source" => [
@@ -219,9 +220,13 @@ final class AssetGateway extends AbstractGateway
         // TODO optimize to use list
         foreach ($result["hits"]["hits"] as $page) {
             $id = (int) $page["_id"];
-
+            
             if (($asset = Asset::getById($id)) instanceof Asset) {
-                $assets[] = $asset;
+                if (isset($resultOptions["raw"]) && $resultOptions["raw"] === true) {
+                    $assets[] = $page;
+                } else {
+                    $assets[] = $asset;
+                }
             }
         }
 

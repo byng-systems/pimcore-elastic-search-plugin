@@ -204,8 +204,9 @@ final class PageGateway extends AbstractGateway
         array $shouldCriteria = [],
         $offset = null,
         $limit = null,
-        $sorting = [],
-        $additionalOptions = []
+        array $sorting = [],
+        array $additionalOptions = [],
+        array $resultOptions = []
     ) {
         $result = $this->doSearch(
             $this->client,
@@ -233,7 +234,11 @@ final class PageGateway extends AbstractGateway
             $id = (int) $page["_id"];
 
             if (($document = Page::getById($id)) instanceof Page) {
-                $documents[] = $document;
+                if (isset($resultOptions["raw"]) && $resultOptions["raw"] === true) {
+                    $documents[] = $page;
+                } else {
+                    $documents[] = $document;
+                }
             }
         }
 
