@@ -36,6 +36,7 @@ abstract class AbstractGateway
      * @param integer|null $limit
      * @param array        $sorting
      * @param array        $additionalOptions
+     * @param array        $resultOptions
      *
      * @return ResultsList
      */
@@ -45,8 +46,9 @@ abstract class AbstractGateway
         array $negationFilters = [],
         $offset = null,
         $limit = null,
-        $sorting = [],
-        $additionalOptions = []
+        array $sorting = [],
+        array $additionalOptions = [],
+        array $resultOptions = []
     ) {
         $mustCriteria = [];
         $filterCriteria = [];
@@ -79,7 +81,8 @@ abstract class AbstractGateway
             $offset,
             $limit,
             $sorting,
-            $additionalOptions
+            $additionalOptions,
+            $resultOptions
         );
     }
 
@@ -94,6 +97,7 @@ abstract class AbstractGateway
      * @param null  $limit
      * @param array $sorting
      * @param array $additionalOptions
+     * @param array $resultOptions
      *
      * @return mixed
      */
@@ -104,8 +108,9 @@ abstract class AbstractGateway
         array $shouldCriteria = [],
         $offset = null,
         $limit = null,
-        $sorting = [],
-        $additionalOptions = []
+        array $sorting = [],
+        array $additionalOptions = [],
+        array $resultOptions = []
     );
 
     /**
