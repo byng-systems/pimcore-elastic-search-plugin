@@ -23,6 +23,7 @@ use Elasticsearch\Client;
  * AbstractGateway
  *
  * @author Elliot Wright <elliot@elliotwright.co>
+ * @author Asim Liaquat <asim@byng.co>
  */
 abstract class AbstractGateway
 {
@@ -216,6 +217,10 @@ abstract class AbstractGateway
                     "query" => $query->getQuery(),
                     "operator" => $query->getOperator()
                 ];
+                break;
+            case "range":
+                $result = [];
+                $result["range"][$query->getField()] = $query->getRanges();
                 break;
             default:
                 throw new \InvalidArgumentException(sprintf(
