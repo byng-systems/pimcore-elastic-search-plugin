@@ -16,6 +16,7 @@ namespace Byng\Pimcore\Elasticsearch\Gateway;
 use Byng\Pimcore\Elasticsearch\Model\ResultsList;
 use Byng\Pimcore\Elasticsearch\Query\BoolQuery;
 use Byng\Pimcore\Elasticsearch\Query\MatchQuery;
+use Byng\Pimcore\Elasticsearch\Query\TermsQuery;
 use Byng\Pimcore\Elasticsearch\Query\Query;
 use Elasticsearch\Client;
 
@@ -217,6 +218,11 @@ abstract class AbstractGateway
                     "query" => $query->getQuery(),
                     "operator" => $query->getOperator()
                 ];
+                break;
+            case "terms":
+                /** @var TermsQuery $query */
+                $result = [];
+                $result["terms"][$query->getField()] = $query->getTerms();
                 break;
             case "range":
                 $result = [];
