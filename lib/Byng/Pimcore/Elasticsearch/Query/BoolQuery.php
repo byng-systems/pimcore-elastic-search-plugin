@@ -135,9 +135,9 @@ final class BoolQuery implements QueryInterface
     public function isEmpty()
     {
         return
-            count($this->must === 0) &&
-            count($this->mustNot === 0) &&
-            count($this->should === 0);
+            count($this->must) === 0 &&
+            count($this->mustNot) === 0 &&
+            count($this->should) === 0;
     }
     
     /**
