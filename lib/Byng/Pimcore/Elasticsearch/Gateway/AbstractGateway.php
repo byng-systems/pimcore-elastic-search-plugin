@@ -14,75 +14,57 @@
 namespace Byng\Pimcore\Elasticsearch\Gateway;
 
 use Byng\Pimcore\Elasticsearch\Model\ResultsList;
-use Byng\Pimcore\Elasticsearch\Query\BoolQuery;
-use Byng\Pimcore\Elasticsearch\Query\MatchQuery;
-use Byng\Pimcore\Elasticsearch\Query\TermsQuery;
 use Byng\Pimcore\Elasticsearch\Query\Query;
+use Byng\Pimcore\Elasticsearch\Query\QueryBuilder;
+use Byng\Pimcore\Elasticsearch\Query\QueryInterface;
 use Elasticsearch\Client;
 
 /**
  * AbstractGateway
  *
  * @author Elliot Wright <elliot@elliotwright.co>
- * @author Asim Liaquat <asim@byng.co>
+ * @author Asim Liaquat <asimlqt22@gmail.com>
  */
 abstract class AbstractGateway
 {
     /**
      * Finds documents by text and term filters
      *
-     * @param string       $text
-     * @param array        $filters
-     * @param array        $negationFilters
-     * @param integer|null $offset
-     * @param integer|null $limit
-     * @param array        $sorting
+     * @param QueryBuilder $queryBuilder
      * @param array        $additionalOptions
      * @param array        $resultOptions
      *
      * @return ResultsList
      */
     public function query(
-        $text,
-        array $filters = [],
-        array $negationFilters = [],
-        $offset = null,
-        $limit = null,
-        array $sorting = [],
+        QueryBuilder $queryBuilder,
         array $additionalOptions = [],
         array $resultOptions = []
     ) {
-        $mustCriteria = [];
-        $filterCriteria = [];
-        $mustNotCriteria = [];
-
-        if (!empty($text)) {
-            $mustCriteria[]["match"]["_all"] = [
-                "query" => (string) $text,
-                "operator" => MatchQuery::OPERATOR_AND
-            ];
+        $body = [];
+        
+        if ($query = $queryBuilder->getQuery()) {
+            $body = $this->processQuery($query);
+        }
+        
+        if ($filter = $queryBuilder->getFilter()) {
+            $body = array_merge($body, $this->processQuery($filter));
+        }
+        
+        if ($from = $queryBuilder->getFrom()) {
+            $body["from"] = $from;
         }
 
-        foreach ($filters as $filter) {
-            $filterCriteria[] = $this->processQuery($filter);
+        if ($size = $queryBuilder->getSize()) {
+            $body["size"] = $size;
         }
-
-        foreach ($negationFilters as $filter) {
-            /** @var MatchQuery $filter */
-            $mustNotCriteria[]["match"][$filter->getField()] = [
-                "query" => $filter->getQuery(),
-                "operator" => $filter->getOperator()
-            ];
+        
+        if ($sort = $queryBuilder->getSort()) {
+            $body["sort"] = $this->processQuery($sort);
         }
-
+        
         return $this->findBy(
-            $mustCriteria,
-            $filterCriteria,
-            $mustNotCriteria,
-            [],
-            $offset,
-            $limit,
-            $sorting,
+            $body,
             $additionalOptions,
             $resultOptions
         );
@@ -91,26 +73,14 @@ abstract class AbstractGateway
     /**
      * Executes an Elasticsearch "bool" query
      *
-     * @param array $mustCriteria
-     * @param array $filterCriteria
-     * @param array $mustNotCriteria
-     * @param array $shouldCriteria
-     * @param null  $offset
-     * @param null  $limit
-     * @param array $sorting
+     * @param array $query
      * @param array $additionalOptions
      * @param array $resultOptions
      *
      * @return mixed
      */
     abstract public function findBy(
-        array $mustCriteria = [],
-        array $filterCriteria = [],
-        array $mustNotCriteria = [],
-        array $shouldCriteria = [],
-        $offset = null,
-        $limit = null,
-        array $sorting = [],
+        array $query,
         array $additionalOptions = [],
         array $resultOptions = []
     );
@@ -121,13 +91,7 @@ abstract class AbstractGateway
      * @param Client       $client
      * @param string       $index
      * @param string       $type
-     * @param array        $mustCriteria
-     * @param array        $filterCriteria
-     * @param array        $mustNotCriteria
-     * @param array        $shouldCriteria
-     * @param null|integer $offset
-     * @param null|integer $limit
-     * @param array        $sorting
+     * @param array        $query
      * @param array        $additionalOptions
      *
      * @return array
@@ -136,40 +100,11 @@ abstract class AbstractGateway
         Client $client,
         $index,
         $type,
-        array $mustCriteria = [],
-        array $filterCriteria = [],
-        array $mustNotCriteria = [],
-        array $shouldCriteria = [],
-        $offset = null,
-        $limit = null,
-        $sorting = [],
+        $query,
         $additionalOptions = []
     ) {
-        $query = [
-            "query" => [
-                "bool" => [
-                    "must" => $mustCriteria,
-                    "filter" => $filterCriteria,
-                    "must_not" => $mustNotCriteria,
-                    "should" => $shouldCriteria
-                ]
-            ],
-        ];
-
         $body = $additionalOptions + $query;
-
-        if ($offset) {
-            $body["from"] = $offset;
-        }
-
-        if ($limit) {
-            $body["size"] = $limit;
-        }
-
-        if (!empty($sorting)) {
-            $body["sort"] = $sorting;
-        }
-
+        
         return $client->search([
             "index" => $index,
             "type" => $type,
@@ -184,19 +119,23 @@ abstract class AbstractGateway
      *
      * @return array
      */
-    protected function processQuery(Query $query)
+    protected function processQuery(QueryInterface $query)
     {
         switch ($query->getType()) {
+            
+            case "query":
+                $result["query"] = $this->processQuery($query->getBoolQuery());
+                break;
+            
+            case "filter":
+                $result["filter"] = $this->processQuery($query->getBoolQuery());
+                break;
+            
             case "bool":
-                /** @var BoolQuery $query */
                 $boolResult = [];
 
                 foreach ($query->getMust() as $must) {
                     $boolResult["must"][] = $this->processQuery($must);
-                }
-
-                foreach ($query->getFilter() as $filter) {
-                    $boolResult["filter"][] = $this->processQuery($filter);
                 }
 
                 foreach ($query->getShould() as $should) {
@@ -211,23 +150,32 @@ abstract class AbstractGateway
                 $result["bool"] = $boolResult;
 
                 break;
+                
             case "match":
-                /** @var MatchQuery $query */
                 $result = [];
-                $result["match"][$query->getField()] = [
-                    "query" => $query->getQuery(),
-                    "operator" => $query->getOperator()
-                ];
+                
+                if ($operator = $query->getOperator()) {
+                    $result["match"][$query->getField()] = [
+                        "query" => $query->getQuery(),
+                        "operator" => $operator
+                    ];
+                } else {
+                    $result["match"][$query->getField()] = $query->getQuery();
+                }
                 break;
-            case "terms":
-                /** @var TermsQuery $query */
-                $result = [];
-                $result["terms"][$query->getField()] = $query->getTerms();
-                break;
+                
             case "range":
                 $result = [];
                 $result["range"][$query->getField()] = $query->getRanges();
                 break;
+            
+            case "sort":
+                $result = [];
+                foreach ($query->getCriteria() as $column => $order) {
+                    $result[$column]["order"] = $order;
+                }
+                break;
+            
             default:
                 throw new \InvalidArgumentException(sprintf(
                     "Unknown query type '%s' given.",

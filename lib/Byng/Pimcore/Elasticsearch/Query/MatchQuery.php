@@ -19,8 +19,9 @@ namespace Byng\Pimcore\Elasticsearch\Query;
  * Encapsulates a "match" query's data.
  *
  * @author Elliot Wright <elliot@elliotwright.co>
+ * @author Asim Liaquat <asimlqt22@gmail.com>
  */
-final class MatchQuery implements Query
+final class MatchQuery implements QueryInterface
 {
     const OPERATOR_AND = "and";
     const OPERATOR_OR = "or";
@@ -48,21 +49,23 @@ final class MatchQuery implements Query
      * @param string|array $query
      * @param string       $operator
      */
-    public function __construct($field, $query, $operator = self::OPERATOR_AND)
+    public function __construct($field, $query, $operator = null)
     {
         $this->field = $field;
         $this->query = $query;
         $this->operator = $operator;
 
-        switch ($this->operator) {
-            case self::OPERATOR_AND:
-            case self::OPERATOR_OR:
-                break;
-            default:
-                throw new \InvalidArgumentException(sprintf(
-                    "Unexpected operator found: '%s'",
-                    $this->operator
-                ));
+        if ($operator !== null) {
+            switch ($this->operator) {
+                case self::OPERATOR_AND:
+                case self::OPERATOR_OR:
+                    break;
+                default:
+                    throw new \InvalidArgumentException(sprintf(
+                        "Unexpected operator found: '%s'",
+                        $this->operator
+                    ));
+            }
         }
     }
 

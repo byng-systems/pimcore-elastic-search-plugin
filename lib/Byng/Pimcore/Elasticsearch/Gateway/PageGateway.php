@@ -198,13 +198,7 @@ final class PageGateway extends AbstractGateway
      * {@inheritdoc}
      */
     public function findBy(
-        array $mustCriteria = [],
-        array $filterCriteria = [],
-        array $mustNotCriteria = [],
-        array $shouldCriteria = [],
-        $offset = null,
-        $limit = null,
-        array $sorting = [],
+        array $query,
         array $additionalOptions = [],
         array $resultOptions = []
     ) {
@@ -212,13 +206,7 @@ final class PageGateway extends AbstractGateway
             $this->client,
             $this->index,
             $this->type,
-            $mustCriteria,
-            $filterCriteria,
-            $mustNotCriteria,
-            $shouldCriteria,
-            $offset,
-            $limit,
-            $sorting,
+            $query,
             $additionalOptions
         );
 
