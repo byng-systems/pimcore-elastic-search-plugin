@@ -4,7 +4,7 @@ The Elasticsearch plugin for Pimcore Saves/updates contents (text only) of docum
 
 ## Features
 
-* Automatic indexing of documents and assets to elasticsearch when created/updated in Pimcore admin. 
+* Automatic indexing of documents and assets to Elasticsearch when created/updated in Pimcore admin. 
 * Hooks to add custom properties to the index.
 * A simple query builder to retrieve indexed documents. Supports querying, filtering, sorting and pagination.
 
@@ -14,16 +14,16 @@ The recommended method to install the Pimcore Elasticsearch PLuing is via Compos
 
 1 - Add byng/pimcore-elasticsearch-plugin as a dependency in your project's composer.json file (change version to suit your version of Elasticsearch):
 ```json
-    {
-        "require": {
-            "byng/pimcore-elasticsearch-plugin": "~3.0"
-        }
+{
+    "require": {
+        "byng/pimcore-elasticsearch-plugin": "~3.0"
     }
+}
 ```
 
 2 - Download and install Composer:
 ```bash
-    curl -s http://getcomposer.org/installer | php
+curl -s http://getcomposer.org/installer | php
 ```
 
 3 - Install your dependencies:
@@ -38,7 +38,7 @@ to `{PIMCORE_WEBSITE_DIR}/var/config/elasticsearchplugin.xml`.
 
 ## Quickstart
 
-Once the installation has been completed, the first time you create or update a document the Elasticsearch index will be created and the document will be indexed. You can verify that the index exists using curl or Kibana.
+Once the installation has been completed, the first time you create or update a document the Elasticsearch index will be created and the document will be indexed. You can verify that the index exists using curl or [Kibana](https://www.elastic.co/products/kibana).
 
 ## Hooks
 
@@ -49,26 +49,26 @@ Hooks allow you to hook into the plugin at various points to provide additional 
 For example to register an even listener:
 
 ```php
-    // @var $eventManager Zend_EventManager_EventManager
-    $eventManager->attach(
-        "document.elasticsearch.preIndex",
-        [__CLASS__, "handlePreIndex"]
-    );
+// @var $eventManager Zend_EventManager_EventManager
+$eventManager->attach(
+    "document.elasticsearch.preIndex",
+    [__CLASS__, "handlePreIndex"]
+);
 ```
 
-The above code will call the handlePreIndex method of the class where it was added whenever a document is ready to be indexed.
+The above code will call the `handlePreIndex()` method of the class where it was added whenever a document is ready to be indexed.
 
-Within the handlePreIndex method you have access to the actual pimcore document which is being indexed and also the data the plugin has lready extracted. You can add additional properties to the parameters array and they will also be saved to the index:
+Within the `handlePreIndex()` method you have access to the actual Pimcore document which is being indexed and also the data the plugin has lready extracted. You can add additional properties to the parameters array and they will also be saved to the index:
 
 ```php
-    public static function handlePreIndex(ZendEvent $event)
-    {
-        /** @var Page $document */
-        $document = $event->getTarget();
-        $params = $event->getParams();
+public static function handlePreIndex(ZendEvent $event)
+{
+    /** @var Page $document */
+    $document = $event->getTarget();
+    $params = $event->getParams();
 
-        $params["body"]["page"]["customProperty"] = "something";
-    }
+    $params["body"]["page"]["customProperty"] = "something";
+}
 ```
 
 ## Available hooks
@@ -88,45 +88,45 @@ This hook is the asset equivalent of "document.elasticsearch.preIndex".
 
 The pluigin provides a simple query builder to make it easy to extract information from Elasticsearch.
 
-### A simple query example
+### Example
 
 ```php
-        use Byng\Pimcore\Elasticsearch\Query\BoolQuery;
-        use Byng\Pimcore\Elasticsearch\Query\MatchQuery;
-        use Byng\Pimcore\Elasticsearch\Query\Query;
-        use Byng\Pimcore\Elasticsearch\Query\QueryBuilder;
-        use Byng\Pimcore\Elasticsearch\Gateway\PageGateway;
+use Byng\Pimcore\Elasticsearch\Query\BoolQuery;
+use Byng\Pimcore\Elasticsearch\Query\MatchQuery;
+use Byng\Pimcore\Elasticsearch\Query\Query;
+use Byng\Pimcore\Elasticsearch\Query\QueryBuilder;
+use Byng\Pimcore\Elasticsearch\Gateway\PageGateway;
 
-        $boolQuery = new BoolQuery();
-        $boolQuery->addMust(new MatchQuery("_all", "something"));
-        
-        $query = new Query($boolQuery);
-        
-        $queryBuilder = new QueryBuilder();
-        $queryBuilder->setQuery($query);
-        $queryBuilder->setSize(10); // number of results to return
-        
-        $pageGateway = PageGateway::getInstance();
-        $resultSet =  $this->pageGateway->query($queryBuilder);
+$boolQuery = new BoolQuery();
+$boolQuery->addMust(new MatchQuery("_all", "something"));
+
+$query = new Query($boolQuery);
+
+$queryBuilder = new QueryBuilder();
+$queryBuilder->setQuery($query);
+$queryBuilder->setSize(10); // number of results to return
+
+$pageGateway = PageGateway::getInstance();
+$resultSet =  $this->pageGateway->query($queryBuilder);
 ```
 
-The following json request will be geenrated form the above code and sent to elasticsearch:
+The following json request will be geenrated form the above code and sent to Elasticsearch:
 
 ```json
-    {
-        "query": {
-            "bool": {
-                "must": [
-                    {
-                        "match": {
-                            "_all": "something"
-                        }
+{
+    "query": {
+        "bool": {
+            "must": [
+                {
+                    "match": {
+                        "_all": "something"
                     }
-                ]
-            }
-        },
-        "size": 10
-    }
+                }
+            ]
+        }
+    },
+    "size": 10
+}
 ```
 
 This will retrieve all documents that contain the word "something".
@@ -134,7 +134,7 @@ This will retrieve all documents that contain the word "something".
 ### Todo
 
 * Provide more complete query documentation
-* Add support for custom queries, i.e. an array which can be converted to json and posted to elasticsearch without any processing if the plugin doesn't support the whole Elasticsearch DSL for querying.
+* Add support for custom queries, i.e. an array which can be converted to json and posted to Elasticsearch without any processing if the plugin doesn't support the whole Elasticsearch DSL for querying.
 
 ## License
 

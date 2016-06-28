@@ -89,36 +89,45 @@ final class BoolQuery implements QueryInterface
      * Add a "must" clause
      * 
      * @param QueryInterface $must
+     * 
+     * @return BoolQuery
      */
     public function addMust(QueryInterface $must)
     {
         $this->must[] = $must;
+        return $this;
     }
 
     /**
      * Add a "should" clause
      * 
      * @param QueryInterface $should
+     * 
+     * @return BoolQuery
      */
     public function addShould(QueryInterface $should)
     {
         $this->should[] = $should;
+        return $this;
     }
 
     /**
      * Add a "must_not"
      * 
      * @param QueryInterface $mustNot
+     * 
+     * @return BoolQuery
      */
     public function addMustNot(QueryInterface $mustNot)
     {
         $this->mustNot[] = $mustNot;
+        return $this;
     }
 
     /**
      * Resets all data which has been added
      * 
-     * @return null
+     * @return void
      */
     public function clear()
     {
@@ -134,10 +143,9 @@ final class BoolQuery implements QueryInterface
      */
     public function isEmpty()
     {
-        return
-            count($this->must) === 0 &&
-            count($this->mustNot) === 0 &&
-            count($this->should) === 0;
+        return count($this->must) === 0 
+            && count($this->mustNot) === 0
+            && count($this->should) === 0;
     }
     
     /**
