@@ -14,13 +14,13 @@
 namespace Byng\Pimcore\Elasticsearch\Query;
 
 /**
- * Query
+ * Filter
  *
- * Encapsulates a query's data.
+ * Encapsulates "filter" data.
  *
  * @author Asim Liaquat <asimlqt22@gmail.com>
  */
-class Query implements QueryInterface
+class Filter implements QueryInterface
 {
     /**
      * @var BoolQuery
@@ -28,7 +28,7 @@ class Query implements QueryInterface
     private $boolQuery;
 
     /**
-     * Query constructor.
+     * Filter constructor.
      *
      * @param BoolQuery $boolQuery
      */
@@ -62,6 +62,6 @@ class Query implements QueryInterface
      */
     public function getType()
     {
-        return "query";
+        return "filter";
     }
 }

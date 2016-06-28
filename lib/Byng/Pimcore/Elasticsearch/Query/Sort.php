@@ -14,47 +14,54 @@
 namespace Byng\Pimcore\Elasticsearch\Query;
 
 /**
- * Query
+ * Sort
  *
- * Encapsulates a query's data.
+ * Encapsulates "sort" data.
  *
  * @author Asim Liaquat <asimlqt22@gmail.com>
  */
-class Query implements QueryInterface
+class Sort implements QueryInterface
 {
     /**
-     * @var BoolQuery
+     * @var array
      */
-    private $boolQuery;
+    private $data = [];
 
     /**
-     * Query constructor.
-     *
-     * @param BoolQuery $boolQuery
+     * Sort constructor.
      */
-    public function __construct(BoolQuery $boolQuery = null)
+    public function __construct()
     {
-        $this->boolQuery = $boolQuery;
     }
 
     /**
-     * Get bool query
-     *
-     * @return BoolQuery
-     */
-    public function getBoolQuery()
-    {
-        return $this->boolQuery;
-    }
-
-    /**
-     * Set bool query
+     * Add a sorting criteria. Can be called multiple times to sort by more than
+     * one column.
      * 
-     * @param BoolQuery $boolQuery
+     * @param string $column
+     * @param string $order
      */
-    public function setBoolQuery(BoolQuery $boolQuery)
+    public function addCriteria($column, $order)
     {
-        $this->boolQuery = $boolQuery;
+        $this->data[$column] = $order;
+    }
+    
+    /**
+     * Get sort criteria
+     * 
+     * @return array
+     */
+    public function getCriteria()
+    {
+        return $this->data;
+    }
+    
+    /**
+     * Resets the previously added criteria
+     */
+    public function clear()
+    {
+        $this->data = [];
     }
     
     /**
@@ -62,6 +69,6 @@ class Query implements QueryInterface
      */
     public function getType()
     {
-        return "query";
+        return "sort";
     }
 }

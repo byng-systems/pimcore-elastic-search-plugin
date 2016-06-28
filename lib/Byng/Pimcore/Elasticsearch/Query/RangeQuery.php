@@ -19,9 +19,9 @@ namespace Byng\Pimcore\Elasticsearch\Query;
  * Allows searching for data which falls within a certain range. Useful for
  * dates etc.
  *
- * @author Asim Liaquat <asim@byng.co>
+ * @author Asim Liaquat <asimlqt22@gmail.com>
  */
-final class RangeQuery implements Query
+final class RangeQuery implements QueryInterface
 {
     const OPERATOR_GT = "gt";
     const OPERATOR_GTE = "gte";

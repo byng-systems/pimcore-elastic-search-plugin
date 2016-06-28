@@ -19,46 +19,38 @@ namespace Byng\Pimcore\Elasticsearch\Query;
  * Encapsulates a "bool" query's data.
  *
  * @author Elliot Wright <elliot@elliotwright.co>
+ * @author Asim Liaquat <asimlqt22@gmail.com>
  */
-final class BoolQuery implements Query
+final class BoolQuery implements QueryInterface
 {
     /**
      * @var array
      */
-    private $must;
+    private $must = [];
 
     /**
      * @var array
      */
-    private $filter;
+    private $should = [];
 
     /**
      * @var array
      */
-    private $should;
-
-    /**
-     * @var array
-     */
-    private $mustNot;
-
+    private $mustNot = [];
 
     /**
      * BoolQuery constructor.
      *
      * @param array $must
-     * @param array $filter
      * @param array $should
      * @param array $mustNot
      */
     public function __construct(
         array $must = [],
-        array $filter = [],
         array $should = [],
         array $mustNot = []
     ) {
         $this->must = $must;
-        $this->filter = $filter;
         $this->should = $should;
         $this->mustNot = $mustNot;
     }
@@ -71,16 +63,6 @@ final class BoolQuery implements Query
     public function getMust()
     {
         return $this->must;
-    }
-
-    /**
-     * Get filter
-     *
-     * @return array
-     */
-    public function getFilter()
-    {
-        return $this->filter;
     }
 
     /**
@@ -104,73 +86,60 @@ final class BoolQuery implements Query
     }
 
     /**
-     * Add a must clause
-     *
-     * @param Query $must
-     *
-     * @return BoolQuery
+     * Add a "must" clause
+     * 
+     * @param QueryInterface $must
      */
-    public function withMust(Query $must)
+    public function addMust(QueryInterface $must)
     {
-        return new BoolQuery(
-            array_merge($this->must, $must),
-            $this->filter,
-            $this->should,
-            $this->mustNot
-        );
+        $this->must[] = $must;
     }
 
     /**
-     * Add a filter clause
-     *
-     * @param Query $filter
-     *
-     * @return BoolQuery
+     * Add a "should" clause
+     * 
+     * @param QueryInterface $should
      */
-    public function withFilter(Query $filter)
+    public function addShould(QueryInterface $should)
     {
-        return new BoolQuery(
-            $this->must,
-            array_merge($this->filter, [ $filter ]),
-            $this->should,
-            $this->mustNot
-        );
+        $this->should[] = $should;
     }
 
     /**
-     * Add a should clause
-     *
-     * @param Query $should
-     *
-     * @return BoolQuery
+     * Add a "must_not"
+     * 
+     * @param QueryInterface $mustNot
      */
-    public function withShould(Query $should)
+    public function addMustNot(QueryInterface $mustNot)
     {
-        return new BoolQuery(
-            $this->must,
-            $this->filter,
-            array_merge($this->should, [ $should ]),
-            $this->mustNot
-        );
+        $this->mustNot[] = $mustNot;
     }
 
     /**
-     * Add a must_not clause
-     *
-     * @param Query $mustNot
-     *
-     * @return BoolQuery
+     * Resets all data which has been added
+     * 
+     * @return null
      */
-    public function withMustNot(Query $mustNot)
+    public function clear()
     {
-        return new BoolQuery(
-            $this->must,
-            $this->filter,
-            $this->should,
-            array_merge($this->mustNot, [ $mustNot ])
-        );
+        $this->must = [];
+        $this->mustNot = [];
+        $this->should = [];
     }
-
+    
+    /**
+     * Checkls whether any "must", "must_not" or "should" claues have been added.
+     * 
+     * @return bool
+     */
+    public function isEmpty()
+    {
+        return
+            count($this->must === 0) &&
+            count($this->mustNot === 0) &&
+            count($this->should === 0);
+    }
+    
     /**
      * {@inheritdoc}
      */
