@@ -10,31 +10,14 @@ The Elasticsearch plugin for Pimcore Saves/updates contents (text only) of docum
 
 ## Installation via composer
 
-The recommended method to install the Pimcore Elasticsearch PLuing is via Composer.
+The recommended method to install the Pimcore Elasticsearch Plugin is via [Composer](https://getcomposer.org/).
 
-1 - Add byng/pimcore-elasticsearch-plugin as a dependency in your project's composer.json file (change version to suit your version of Elasticsearch):
-```json
-{
-    "require": {
-        "byng/pimcore-elasticsearch-plugin": "~3.0"
-    }
-}
-```
+1 - Add [`byng/pimcore-elasticsearch-plugin`](https://packagist.org/packages/byng/pimcore-elasticsearch-plugin) as a dependency in your project's composer.json file and run `composer install`
 
-2 - Download and install Composer:
-```bash
-curl -s http://getcomposer.org/installer | php
-```
-
-3 - Install your dependencies:
-```bash
-php composer.phar install
-```
-
-4 - Copy the distribution config file (`elasticsearchplugin.xml.dist`) in the root of the plugin folder 
+2 - Copy the distribution config file (`elasticsearchplugin.xml.dist`) in the root of the plugin folder 
 to `{PIMCORE_WEBSITE_DIR}/var/config/elasticsearchplugin.xml`.
 
-5 - Enable the plugin in Pimcore using the extension manager.
+3 - Enable the plugin in Pimcore using the extension manager.
 
 ## Quickstart
 
