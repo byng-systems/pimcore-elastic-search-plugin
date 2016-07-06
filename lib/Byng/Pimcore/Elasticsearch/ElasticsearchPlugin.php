@@ -77,6 +77,18 @@ final class ElasticsearchPlugin extends AbstractPlugin implements PluginInterfac
         if (self::isInstalled()) {
             return true;
         }
+        $configPath = new ConfigFilePath();
+
+        if (!is_writable($configPath->getDirectory())) {
+            throw new \RuntimeException(sprintf(
+                "Unable to write to config directory: '%s'",
+                $configPath->getDirectory()
+            ));
+        }
+
+        if (!copy(new ConfigDistFilePath(), $configPath)) {
+            throw new \RuntimeException("Unable to create a config file: " . $configPath);
+        }
 
         $config = self::loadConfig();
 
@@ -97,21 +109,21 @@ final class ElasticsearchPlugin extends AbstractPlugin implements PluginInterfac
                 }
 
                 $client->indices()->putMapping($indexParams + [
-                    "type" => $assetConfig->get("typeName"),
-                    "body" => [
-                        "asset" => [
-                            "properties" => [
-                                $assetConfig->get("typeName") => [
-                                    "properties" => [
-                                        $assetConfig->get("bodyContent")->get("propertyName") => [
-                                            "type" => "attachment"
+                        "type" => $assetConfig->get("typeName"),
+                        "body" => [
+                            "asset" => [
+                                "properties" => [
+                                    $assetConfig->get("typeName") => [
+                                        "properties" => [
+                                            $assetConfig->get("bodyContent")->get("propertyName") => [
+                                                "type" => "attachment"
+                                            ]
                                         ]
                                     ]
                                 ]
                             ]
                         ]
-                    ]
-                ]);
+                    ]);
             }
 
             /** @var Zend_Config $pageConfig */
@@ -126,20 +138,7 @@ final class ElasticsearchPlugin extends AbstractPlugin implements PluginInterfac
             }
         }
 
-        $configPath = new ConfigFilePath();
-
-        if (!is_writable($configPath->getDirectory())) {
-            throw new \RuntimeException(sprintf(
-                "Unable to write to config directory: '%s'",
-                $configPath->getDirectory()
-            ));
-        }
-
-        if (copy(new ConfigDistFilePath(), $configPath)) {
-            return true;
-        }
-
-        throw new \RuntimeException("Unable to create a config file: " . $configPath);
+        return true;
     }
 
     /**
