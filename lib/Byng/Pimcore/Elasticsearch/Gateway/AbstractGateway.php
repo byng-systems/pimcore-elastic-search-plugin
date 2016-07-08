@@ -115,7 +115,7 @@ abstract class AbstractGateway
     /**
      * Process a query into an array usable by Elasticsearch
      *
-     * @param Query $query
+     * @param QueryInterface $query
      *
      * @return array
      */
@@ -174,6 +174,13 @@ abstract class AbstractGateway
                 foreach ($query->getCriteria() as $column => $order) {
                     $result[$column]["order"] = $order;
                 }
+                break;
+
+            case "terms":
+                $result = [];
+                $result["constant_score"]["filter"]["terms"] = [
+                    $query->getField() => $query->getTerms()
+                ];
                 break;
             
             default:
