@@ -177,7 +177,6 @@ abstract class AbstractGateway
                 break;
 
             case "terms":
-                $result = [];
                 $result["constant_score"]["filter"]["terms"] = [
                     $query->getField() => $query->getTerms()
                 ];
