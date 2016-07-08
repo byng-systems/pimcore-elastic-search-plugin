@@ -20,7 +20,7 @@ namespace Byng\Pimcore\Elasticsearch\Query;
  *
  * @author Asim Liaquat <asim@byng.co>
  */
-final class TermsQuery implements Query
+final class TermsQuery implements QueryInterface
 {
     /**
      * @var string
