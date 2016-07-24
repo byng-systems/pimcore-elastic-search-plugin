@@ -105,8 +105,6 @@ abstract class AbstractGateway
     ) {
         $body = $additionalOptions + $query;
         
-        file_put_contents("/home/asim/junk.log", date("[Y-m-d H:i:s] ") . json_encode($body, JSON_PRETTY_PRINT) . "\n", FILE_APPEND);
-        
         return $client->search([
             "index" => $index,
             "type" => $type,
