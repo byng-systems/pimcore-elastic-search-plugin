@@ -105,6 +105,8 @@ abstract class AbstractGateway
     ) {
         $body = $additionalOptions + $query;
         
+        file_put_contents("/home/asim/junk.log", date("[Y-m-d H:i:s] ") . json_encode($body, JSON_PRETTY_PRINT) . "\n", FILE_APPEND);
+        
         return $client->search([
             "index" => $index,
             "type" => $type,
@@ -128,7 +130,7 @@ abstract class AbstractGateway
                 break;
             
             case "filter":
-                $result["filter"] = $this->processQuery($query->getBoolQuery());
+                $result["filter"] = $this->processQuery($query->getQuery());
                 break;
             
             case "bool":
@@ -177,8 +179,19 @@ abstract class AbstractGateway
                 break;
 
             case "terms":
-                $result["constant_score"]["filter"]["terms"] = [
+                $result["terms"] = [
                     $query->getField() => $query->getTerms()
+                ];
+                break;
+            
+            case "constant_score":
+                $result["constant_score"] = $this->processQuery($query->getFilter());
+                break;
+            
+            case "nested":
+                $result["nested"] = [
+                    "path" => $query->getPath(),
+                    "query" => $this->processQuery($query->getQuery())
                 ];
                 break;
             
