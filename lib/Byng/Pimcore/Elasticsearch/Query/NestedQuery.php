@@ -14,33 +14,50 @@
 namespace Byng\Pimcore\Elasticsearch\Query;
 
 /**
- * Filter
+ * Nested Query
  *
- * Encapsulates "filter" data.
+ * Encapsulates a "nested" query's data.
  *
- * @author Asim Liaquat <asimlqt22@gmail.com>
+ * @author Asim Liaquat <asim@byng.co>
  */
-class Filter implements QueryInterface
+final class NestedQuery implements QueryInterface
 {
     /**
-     * @var QueryInterface
+     * @var string
+     */
+    private $path;
+
+    /**
+     * @var Query
      */
     private $query;
 
     /**
-     * Filter constructor.
+     * NestedQuery constructor.
      *
-     * @param QueryInterface $query
+     * @param string $path
+     * @param array  $query
      */
-    public function __construct(QueryInterface $query = null)
+    public function __construct($path, Query $query)
     {
+        $this->path = $path;
         $this->query = $query;
     }
 
     /**
-     * Get bool query
+     * Get path
      *
-     * @return QueryInterface
+     * @return string
+     */
+    public function getPath()
+    {
+        return $this->path;
+    }
+
+    /**
+     * Get query
+     *
+     * @return array
      */
     public function getQuery()
     {
@@ -48,20 +65,10 @@ class Filter implements QueryInterface
     }
 
     /**
-     * Set bool query
-     * 
-     * @param QueryInterface $query
-     */
-    public function setQuery(QueryInterface $query)
-    {
-        $this->query = $query;
-    }
-    
-    /**
      * {@inheritdoc}
      */
     public function getType()
     {
-        return "filter";
+        return "nested";
     }
 }

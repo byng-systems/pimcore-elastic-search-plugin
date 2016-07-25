@@ -128,7 +128,7 @@ abstract class AbstractGateway
                 break;
             
             case "filter":
-                $result["filter"] = $this->processQuery($query->getBoolQuery());
+                $result["filter"] = $this->processQuery($query->getQuery());
                 break;
             
             case "bool":
@@ -177,8 +177,19 @@ abstract class AbstractGateway
                 break;
 
             case "terms":
-                $result["constant_score"]["filter"]["terms"] = [
+                $result["terms"] = [
                     $query->getField() => $query->getTerms()
+                ];
+                break;
+            
+            case "constant_score":
+                $result["constant_score"] = $this->processQuery($query->getFilter());
+                break;
+            
+            case "nested":
+                $result["nested"] = [
+                    "path" => $query->getPath(),
+                    "query" => $this->processQuery($query->getQuery())
                 ];
                 break;
             

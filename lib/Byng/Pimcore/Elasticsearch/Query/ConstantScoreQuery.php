@@ -14,54 +14,44 @@
 namespace Byng\Pimcore\Elasticsearch\Query;
 
 /**
- * Filter
+ * ConstantScore Query
  *
- * Encapsulates "filter" data.
+ * Encapsulates a "constant_score" query's data.
  *
- * @author Asim Liaquat <asimlqt22@gmail.com>
+ * @author Asim Liaquat <asim@byng.co>
  */
-class Filter implements QueryInterface
+final class ConstantScoreQuery implements QueryInterface
 {
     /**
-     * @var QueryInterface
+     * @var Filter
      */
-    private $query;
+    private $filter;
 
     /**
-     * Filter constructor.
+     * ConstantScoreQuery constructor.
      *
-     * @param QueryInterface $query
+     * @param Filter $filter
      */
-    public function __construct(QueryInterface $query = null)
+    public function __construct(Filter $filter)
     {
-        $this->query = $query;
+        $this->filter = $filter;
     }
 
     /**
-     * Get bool query
+     * Get filter
      *
-     * @return QueryInterface
+     * @return Filter
      */
-    public function getQuery()
+    public function getFilter()
     {
-        return $this->query;
+        return $this->filter;
     }
 
-    /**
-     * Set bool query
-     * 
-     * @param QueryInterface $query
-     */
-    public function setQuery(QueryInterface $query)
-    {
-        $this->query = $query;
-    }
-    
     /**
      * {@inheritdoc}
      */
     public function getType()
     {
-        return "filter";
+        return "constant_score";
     }
 }
