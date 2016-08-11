@@ -13,7 +13,10 @@
 
 namespace Byng\Pimcore\Elasticsearch\Query;
 
+use Byng\Pimcore\Elasticsearch\Query\QueryInterface;
+
 /**
+ * 
  * QueryBuilder defines the query to send to elasticsearch.
  *
  * @author Asim Liaquat <asimlqt22@gmail.com>
@@ -155,6 +158,129 @@ class QueryBuilder
     public function setSort(Sort $sort)
     {
         $this->sort = $sort;
+    }
+
+    /**
+     * Converts the query builder into an array
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        $body = [];
+        
+        if ($query = $this->getQuery()) {
+            $body = $this->processQuery($query);
+        }
+        
+        if ($filter = $this->getFilter()) {
+            $body = array_merge($body, $this->processQuery($filter));
+        }
+        
+        if ($from = $this->getFrom()) {
+            $body["from"] = $from;
+        }
+
+        if ($size = $this->getSize()) {
+            $body["size"] = $size;
+        }
+        
+        if ($sort = $this->getSort()) {
+            $body["sort"] = $this->processQuery($sort);
+        }
+        
+        return $body;
+    }
+
+    /**
+     * Process a query into an array usable by Elasticsearch
+     *
+     * @param QueryInterface $query
+     *
+     * @return array
+     */
+    protected function processQuery(QueryInterface $query)
+    {
+        switch ($query->getType()) {
+            
+            case "query":
+                $result["query"] = $this->processQuery($query->getBoolQuery());
+                break;
+            
+            case "filter":
+                $result["filter"] = $this->processQuery($query->getQuery());
+                break;
+            
+            case "bool":
+                $boolResult = [];
+
+                foreach ($query->getMust() as $must) {
+                    $boolResult["must"][] = $this->processQuery($must);
+                }
+
+                foreach ($query->getShould() as $should) {
+                    $boolResult["should"][] = $this->processQuery($should);
+                }
+
+                foreach ($query->getMustNot() as $mustNot) {
+                    $boolResult["must_not"][] = $this->processQuery($mustNot);
+                }
+
+                $result = [];
+                $result["bool"] = $boolResult;
+
+                break;
+                
+            case "match":
+                $result = [];
+                
+                if ($operator = $query->getOperator()) {
+                    $result["match"][$query->getField()] = [
+                        "query" => $query->getQuery(),
+                        "operator" => $operator
+                    ];
+                } else {
+                    $result["match"][$query->getField()] = $query->getQuery();
+                }
+                break;
+                
+            case "range":
+                $result = [];
+                $result["range"][$query->getField()] = $query->getRanges();
+                break;
+            
+            case "sort":
+                $result = [];
+                foreach ($query->getCriteria() as $column => $order) {
+                    $result[$column]["order"] = $order;
+                }
+                break;
+
+            case "terms":
+                $result["terms"] = [
+                    $query->getField() => $query->getTerms()
+                ];
+                break;
+            
+            case "constant_score":
+                $result["constant_score"] = $this->processQuery($query->getFilter());
+                break;
+            
+            case "nested":
+                $result["nested"] = [
+                    "path" => $query->getPath(),
+                    "query" => $this->processQuery($query->getQuery())
+                ];
+                break;
+            
+            default:
+                throw new \InvalidArgumentException(sprintf(
+                    "Unknown query type '%s' given.",
+                    $query->getType()
+                ));
+        }
+
+        return $result;
     }
 
 }

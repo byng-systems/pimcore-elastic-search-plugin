@@ -21,6 +21,7 @@ use Byng\Pimcore\Elasticsearch\Job\CacheAllPagesJob;
 use Byng\Pimcore\Elasticsearch\PluginConfig\ConfigDistFilePath;
 use Byng\Pimcore\Elasticsearch\PluginConfig\ConfigFilePath;
 use Byng\Pimcore\Elasticsearch\Gateway\PageGatewayFactory;
+use Byng\Pimcore\Elasticsearch\Gateway\RawGatewayFactory;
 use Byng\Pimcore\Elasticsearch\PluginConfig\ConfigSchemaPath;
 use Elasticsearch\ClientBuilder;
 use Pimcore;
@@ -35,6 +36,7 @@ use Zend_Config_Xml as XmlConfig;
  * @author Elliot Wright <elliot@byng.co>
  * @author Matt Ward <matt@byng.co>
  * @author Michal Maszkiewicz
+ * @author Asim Liaquat <asim@byng.co>
  */
 final class ElasticsearchPlugin extends AbstractPlugin implements PluginInterface
 {
@@ -44,9 +46,12 @@ final class ElasticsearchPlugin extends AbstractPlugin implements PluginInterfac
     public function init()
     {
         $config = self::loadConfig();
+        $hosts = $config->get("hosts");
 
+        $rawGatewayFactory = new RawGatewayFactory();
+        $rawGateway = $rawGatewayFactory->build($hosts);
+        
         if ($types = $config->get("types")) {
-            $hosts = $config->get("hosts");
             $eventManager = Pimcore::getEventManager();
 
             if ($assetConfig = $types->get("asset")) {
