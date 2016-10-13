@@ -1,101 +1,90 @@
 <?php
-/**
- * TagKeyFilter.php
- * Definition of class TagKeyFilter
- * 
- * Created 16-Mar-2015 16:00:55
- *
- * @author M.D.Ward <matthew.ward@byng.co>
- * @copyright (c) 2015, Byng Services Ltd
- */
+
 namespace ElasticSearch\Filter;
-
-
 
 /**
  * TagKeyFilter
- * 
+ *
  * @author M.D.Ward <matthew.ward@byng.co>
  */
 class TagKeyFilter implements FilterInterface
 {
-    
     /**
-     *
      * @var array
      */
     protected $replaceable = [' ', '-', '\''];
-    
+
     /**
-     *
      * @var string
      */
     protected $replacement = '_';
-    
-    
-    
+
+
     /**
-     * 
+     * TagKeyFilter constructor.
+     *
      * @param array $replaceable
-     * @param type $replacement
+     * @param string $replacement
      */
     public function __construct(array $replaceable = null, $replacement = null)
     {
         if ($replaceable !== null) {
             $this->setReplaceable($replaceable);
         }
-        
+
         if ($replacement !== null) {
             $this->setReplacement($replacement);
         }
     }
-    
+
     /**
-     * 
+     * Get replaceable.
+     *
      * @return array
      */
     public function getReplaceable()
     {
         return $this->replaceable;
     }
-    
+
     /**
-     * 
+     * Get replacement.
+     *
      * @return string
      */
     public function getReplacement()
     {
         return $this->replacement;
     }
-    
+
     /**
-     * 
+     * Set replaceable.
+     *
      * @param array $replaceable
-     * @return interface
+     * @return $this
      */
     public function setReplaceable(array $replaceable)
     {
         $this->replaceable = $replaceable;
-        
+
         return $this;
     }
 
     /**
-     * 
+     * Set replacement.
+     *
      * @param string $replacement
-     * @return \ElasticSearch\Filter\TagKeyFilter
+     * @return $this
      */
     public function setReplacement($replacement)
     {
         $this->replacement = $replacement;
-        
+
         return $this;
     }
-    
+
     /**
-     * 
-     * @param string $input
-     * @return string
+     * {@inheritdoc}
      */
     public function filter($input)
     {
@@ -105,5 +94,4 @@ class TagKeyFilter implements FilterInterface
             strtolower((string) $input)
         );
     }
-    
 }

@@ -1,13 +1,4 @@
 <?php
-/**
- * ResultsList.php
- * Definition of class ResultsList
- * 
- * Created 17-Apr-2015 13:42:01
- *
- * @author M.D.Ward <matthew.ward@byng.co>
- * @copyright (c) 2015, Byng Services Ltd
- */
 
 namespace ElasticSearch\Model;
 
@@ -18,33 +9,28 @@ use InvalidArgumentException;
 use Iterator;
 use UnexpectedValueException;
 
-
-
 /**
  * ResultsList
- * 
+ *
  * @author M.D.Ward <matthew.ward@byng.co>
  */
 class ResultsList implements Iterator, ArrayAccess, Countable
 {
-    
     /**
-     *
      * @var array
      */
     protected $results = [];
-    
+
     /**
-     *
      * @var integer
      */
     protected $totalHits;
-    
-    
-    
+
+
     /**
-     * 
-     * @param array $results
+     * ResultsList constructor.
+     *
+     * @param array   $results
      * @param integer $totalHits
      * @throws InvalidArgumentException
      * @throws UnexpectedValueException
@@ -52,38 +38,40 @@ class ResultsList implements Iterator, ArrayAccess, Countable
     public function __construct(array $results, $totalHits)
     {
         $this->results = $results;
-        
+
         if (!is_numeric($totalHits)) {
             throw new InvalidArgumentException("Number of total hits must be given as an integer");
         }
-        
-        if ((($totalHits = (int) $totalHits)) < 0) {
+
+        if ((($totalHits = (int)$totalHits)) < 0) {
             throw new UnexpectedValueException("Number of total hits must be greater than or equal to zero");
         }
+
         $this->totalHits = $totalHits;
     }
-    
+
     /**
-     * 
+     * Get results.
+     *
      * @return array
      */
     public function getResults()
     {
         return $this->results;
     }
-    
+
     /**
-     * 
+     * Get totalHits.
+     *
+     * @return integer
      */
     public function getTotalHits()
     {
         return $this->totalHits;
     }
-    
+
     /**
-     * 
-     * @param string $mode
-     * @return integer
+     * {@inheritdoc}
      */
     public function count($mode = COUNT_NORMAL)
     {
@@ -91,8 +79,7 @@ class ResultsList implements Iterator, ArrayAccess, Countable
     }
 
     /**
-     * 
-     * @return mixed
+     * {@inheritdoc}
      */
     public function current()
     {
@@ -100,8 +87,7 @@ class ResultsList implements Iterator, ArrayAccess, Countable
     }
 
     /**
-     * 
-     * @return mixed
+     * {@inheritdoc}
      */
     public function key()
     {
@@ -109,8 +95,7 @@ class ResultsList implements Iterator, ArrayAccess, Countable
     }
 
     /**
-     * 
-     * @return mixed
+     * {@inheritdoc}
      */
     public function next()
     {
@@ -118,8 +103,7 @@ class ResultsList implements Iterator, ArrayAccess, Countable
     }
 
     /**
-     * 
-     * @return mixed
+     * {@inheritdoc}
      */
     public function rewind()
     {
@@ -127,8 +111,7 @@ class ResultsList implements Iterator, ArrayAccess, Countable
     }
 
     /**
-     * 
-     * @return boolean
+     * {@inheritdoc}
      */
     public function valid()
     {
@@ -136,8 +119,7 @@ class ResultsList implements Iterator, ArrayAccess, Countable
     }
 
     /**
-     * 
-     * @return boolean
+     * {@inheritdoc}
      */
     public function offsetExists($offset)
     {
@@ -145,8 +127,7 @@ class ResultsList implements Iterator, ArrayAccess, Countable
     }
 
     /**
-     * 
-     * @return mixed
+     * {@inheritdoc}
      */
     public function offsetGet($offset)
     {
@@ -154,10 +135,7 @@ class ResultsList implements Iterator, ArrayAccess, Countable
     }
 
     /**
-     * 
-     * @param mixed $offset
-     * @param mixed $value
-     * @throws BadMethodCallException
+     * {@inheritdoc}
      */
     public function offsetSet($offset, $value)
     {
@@ -165,13 +143,10 @@ class ResultsList implements Iterator, ArrayAccess, Countable
     }
 
     /**
-     * 
-     * @param mixed $offset
-     * @throws BadMethodCallException
+     * {@inheritdoc}
      */
     public function offsetUnset($offset)
     {
         throw new BadMethodCallException("This result set is immutable");
     }
-
 }

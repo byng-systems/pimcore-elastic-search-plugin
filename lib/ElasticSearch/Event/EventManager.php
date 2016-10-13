@@ -1,30 +1,25 @@
 <?php
-/**
- *
- * @author      Michal Maszkiewicz
- * @package     Elastic Search Plugin
- */
 
 namespace ElasticSearch\Event;
 
-use Closure;
-use Document_Page;
 use ElasticSearch\Job\CacheAllPagesJob;
 use ElasticSearch\Repository\PageRepository;
-use Schedule_Maintenance_Job;
-use Schedule_Manager_Procedural;
+use Pimcore\Model\Document\Page;
+use Pimcore\Model\Schedule\Maintenance\Job;
+use Pimcore\Model\Schedule\Manager\Procedural;
 use Zend_EventManager_Event as Event;
 use Zend_EventManager_EventManager;
 use Zend_EventManager_Exception_InvalidArgumentException;
 
-
+/**
+ * EventManager
+ *
+ * @author M.D.Ward <matthew.ward@byng.co>
+ */
 class EventManager
 {
-    /**
-     * 
-     */
-    const MAINTENANCE_JOB_REBUILD_PAGES = 'elasticsearch-recache-pages';
-    
+    const MAINTENANCE_JOB_REBUILD_PAGES = "elasticsearch-recache-pages";
+
     /**
      * @var Zend_EventManager_EventManager
      */
@@ -34,18 +29,19 @@ class EventManager
      * @var PageRepository
      */
     protected $pageRepository;
-    
+
     /**
-     *
      * @var CacheAllPagesJob
      */
     protected $cacheAllPagesJob;
-    
-    
-    
+
+
     /**
+     * EventManager constructor.
+     *
      * @param Zend_EventManager_EventManager $pimcoreEventManager
-     * @param PageRepository $pageRepository
+     * @param PageRepository                 $pageRepository
+     * @param CacheAllPagesJob               $cacheAllPagesJob
      */
     public function __construct(
         Zend_EventManager_EventManager $pimcoreEventManager,
@@ -58,30 +54,26 @@ class EventManager
     }
 
     /**
-     * Attached a maintenance 
+     * Add the maintenance job to Pimcore, so it will run as part of the maintenance script.
+     *
+     * @return void
      */
     public function attachMaintenance()
     {
         $this->pimcoreEventManager->attach(
-            'system.maintenance',
-            Closure::bind(
-                function(Event $event) {
-                    /* @var $target Schedule_Manager_Procedural */
-                    $target = $event->getTarget();
-
-                    $target->registerJob(
-                        new Schedule_Maintenance_Job(
-                            self::MAINTENANCE_JOB_REBUILD_PAGES,
-                            $this->cacheAllPagesJob,
-                            'rebuildPageCache'
-                        )
-                    );
-                },
-                $this
-            )
+            "system.maintenance",
+            \Closure::bind(function(Event $event) {
+                /* @var Procedural $target */
+                $target = $event->getTarget();
+                $target->registerJob(new Job(
+                    self::MAINTENANCE_JOB_REBUILD_PAGES,
+                    $this->cacheAllPagesJob,
+                    "rebuildPageCache"
+                ));
+            }, $this)
         );
     }
-    
+
     /**
      * Attaches indexing/deleting in Elastic Search index to document post update event
      *
@@ -90,25 +82,19 @@ class EventManager
     public function attachPostUpdate()
     {
         // Hook into document update event.
-        $this->pimcoreEventManager->attach('document.postUpdate', function ($event) {
-            /** @var Document_Page $document */
+        $this->pimcoreEventManager->attach("document.postUpdate", function ($event) {
+            /** @var Page $document */
             $document = $event->getTarget();
-            // We do not want to index snippets.
-            if ($document instanceof Document_Page) {
 
+            // We do not want to index snippets.
+            if ($document instanceof Page) {
                 // Index only published documents.
                 if ($document->isPublished()) {
-
                     $this->pageRepository->save($document);
-
-
                 } else {
-
                     // When un-publishing a document remove it from the index.
                     $this->pageRepository->delete($document);
-
                 }
-
             }
         });
     }
@@ -120,14 +106,13 @@ class EventManager
      */
     public function attachPostDelete()
     {
-        $this->pimcoreEventManager->attach('document.postDelete', function ($event) {
-            /** @var Document_Page $document */
+        $this->pimcoreEventManager->attach("document.postDelete", function ($event) {
+            /** @var Page $document */
             $document = $event->getTarget();
+
             // Disregard snippets.
-            if ($document instanceof Document_Page) {
-
+            if ($document instanceof Page) {
                 $this->pageRepository->delete($document);
-
             }
         });
     }

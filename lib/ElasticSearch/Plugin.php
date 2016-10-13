@@ -1,34 +1,27 @@
 <?php
 
-/**
- * Class ElasticSearch_Plugin
- *
- * @author      Michal Maszkiewicz
- * @package     Elastic Search Plugin
- */
-
 use ElasticSearch\Event\EventManager as DocumentEventManager;
 use ElasticSearch\Job\CacheAllPagesJob;
 use ElasticSearch\PluginConfig\ConfigDistFilePath;
 use ElasticSearch\PluginConfig\ConfigFilePath;
 use ElasticSearch\Repository\PageRepositoryFactory;
+use Pimcore\API\Plugin\AbstractPlugin;
+use Pimcore\API\Plugin\PluginInterface;
 
-
-
-class ElasticSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore_API_Plugin_Interface
+/**
+ * ElasticSearch_Plugin
+ *
+ * @author M.D.Ward <matthew.ward@byng.co>
+ */
+class ElasticSearch_Plugin extends AbstractPlugin implements PluginInterface
 {
-
     public function init()
     {
         $config = new Zend_Config_Xml(new ConfigFilePath());
         $repositoryFactory = new PageRepositoryFactory();
         $pageRepository = $repositoryFactory->build($config);
 
-        $documentEventManager = new DocumentEventManager(
-            Pimcore::getEventManager(),
-            $pageRepository,
-            new CacheAllPagesJob($pageRepository)
-        );
+        $documentEventManager = new DocumentEventManager(Pimcore::getEventManager(), $pageRepository, new CacheAllPagesJob($pageRepository));
 
         $documentEventManager->attachPostDelete();
         $documentEventManager->attachPostUpdate();
@@ -43,15 +36,11 @@ class ElasticSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcor
 
         $configPath = new ConfigFilePath();
 
-        if (! is_writable($configPath->getDirectory())) {
-
-            throw new RuntimeException(
-                'Unable to write to config directory: ' . $configPath->getDirectory()
-            );
+        if (!is_writable($configPath->getDirectory())) {
+            throw new RuntimeException('Unable to write to config directory: ' . $configPath->getDirectory());
         }
 
         if (copy(new ConfigDistFilePath(), $configPath)) {
-
             return true;
         }
 
@@ -61,9 +50,7 @@ class ElasticSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcor
     public static function uninstall()
     {
         if (self::isInstalled()) {
-
             unlink(new ConfigFilePath());
-
         }
 
         return true;
@@ -74,15 +61,12 @@ class ElasticSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcor
         $configPath = new ConfigFilePath();
 
         if (file_exists($configPath)) {
-
             if (is_writable($configPath)) {
-
                 // Consider installed as config file exists and is writable.
                 return true;
             }
 
             throw new RuntimeException('Config file exists, but is not writable: ' . $configPath);
-
         }
 
         return false;
