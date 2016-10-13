@@ -1,2 +1,0 @@
-
-ElasticSearch Plugin works!

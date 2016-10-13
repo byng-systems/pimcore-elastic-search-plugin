@@ -2,11 +2,11 @@
 
 namespace ElasticSearch\Job;
 
-use Document_Page;
-use Document_List;
 use ElasticSearch\Repository\PageRepository;
 use Exception;
 use Logger;
+use Pimcore\Model\Document\Listing;
+use Pimcore\Model\Document\Page;
 
 /**
  * Class CacheAllPagesJob
@@ -46,16 +46,16 @@ class CacheAllPagesJob
      */
     public function rebuildPageCache()
     {
-        $documentCount = Document_Page::getTotalCount();
+        $documentCount = Page::getTotalCount();
 
         for ($documentIndex = 0; $documentIndex < $documentCount; $documentIndex += self::PAGE_PROCESSING_LIMIT) {
-            $documentListing = new Document_List();
+            $documentListing = new Listing();
             $documentListing->setOffset($documentIndex);
             $documentListing->setLimit(self::PAGE_PROCESSING_LIMIT);
             $documentListing->setCondition("type = ?", [ "page" ]);
 
             foreach ($documentListing->load() as $document) {
-                if ($document instanceof Document_Page && $document->isPublished()) {
+                if ($document instanceof Page && $document->isPublished()) {
                     $this->rebuildDocumentCache($document);
                 }
             }
@@ -65,11 +65,11 @@ class CacheAllPagesJob
     /**
      * Rebuild the document cache of a specific document.
      *
-     * @param Document_Page $document
+     * @param Page $document
      *
      * @return void
      */
-    protected function rebuildDocumentCache(Document_Page $document)
+    protected function rebuildDocumentCache(Page $document)
     {
         try {
             $this->pageRepository->save($document);
