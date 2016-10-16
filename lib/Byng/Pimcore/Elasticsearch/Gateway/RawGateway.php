@@ -22,8 +22,9 @@ use Byng\Pimcore\Elasticsearch\Query\QueryBuilder;
  * Raw Gateway
  *
  * @author Asim Liaquat <asim@byng.co>
+ * @author Max Baldanza <mbaldanza@inviqa.com>
  */
-final class RawGateway extends AbstractGateway
+final class RawGateway extends AbstractGateway implements RawGatewayInterface
 {
     /**
      * @var RawGateway
