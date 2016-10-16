@@ -93,7 +93,7 @@ $pageGateway = PageGateway::getInstance();
 $resultSet =  $pageGateway->query($queryBuilder);
 ```
 
-The following json request will be geenrated form the above code and sent to Elasticsearch:
+The following json request will be generated form the above code and sent to Elasticsearch:
 
 ```json
 {
