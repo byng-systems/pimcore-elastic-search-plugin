@@ -90,7 +90,7 @@ $queryBuilder->setQuery($query);
 $queryBuilder->setSize(10); // number of results to return
 
 $pageGateway = PageGateway::getInstance();
-$resultSet =  $this->pageGateway->query($queryBuilder);
+$resultSet =  $pageGateway->query($queryBuilder);
 ```
 
 The following json request will be geenrated form the above code and sent to Elasticsearch:
