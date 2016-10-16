@@ -120,6 +120,26 @@ final class RawGateway extends AbstractGateway
     {
         return $this->doFind($index, $type, $query->toArray());
     }
+
+    /**
+     * Delete from index
+     *
+     * @param string $index
+     * @param string $type
+     * @param int $id
+     *
+     * @return array
+     */
+    public function delete($index, $type, $id)
+    {
+        $params = [
+            "id" => $id,
+            "index" => $index,
+            "type" => $type
+        ];
+
+        return $this->client->delete($params);
+    }
     
     /**
      * Perform a search on the given index and type.
