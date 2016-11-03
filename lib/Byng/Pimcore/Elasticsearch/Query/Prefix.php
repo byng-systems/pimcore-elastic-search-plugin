@@ -14,10 +14,9 @@
 namespace Byng\Pimcore\Elasticsearch\Query;
 
 /**
- * Range Query
+ * Prefix Query
  *
- * Allows searching for data which falls within a certain range. Useful for
- * dates etc.
+ * Allows to do prefix queries
  *
  * @author Asim Liaquat <asimlqt22@gmail.com>
  */
