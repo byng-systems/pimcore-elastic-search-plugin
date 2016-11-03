@@ -181,6 +181,12 @@ abstract class AbstractGateway
                     $query->getField() => $query->getTerms()
                 ];
                 break;
+
+            case "prefix":
+                $result["prefix"] = [
+                    $query->getField() => $query->getQuery()
+                ];
+                break;
             
             case "constant_score":
                 $result["constant_score"] = $this->processQuery($query->getFilter());

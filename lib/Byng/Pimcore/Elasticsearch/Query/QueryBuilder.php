@@ -262,6 +262,12 @@ class QueryBuilder
                 ];
                 break;
             
+            case "prefix":
+                $result["prefix"] = [
+                    $query->getField() => $query->getQuery()
+                ];
+                break;
+            
             case "constant_score":
                 $result["constant_score"] = $this->processQuery($query->getFilter());
                 break;
