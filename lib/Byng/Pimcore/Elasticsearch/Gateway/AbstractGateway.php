@@ -188,6 +188,18 @@ abstract class AbstractGateway
                 ];
                 break;
             
+            case "regexp":
+                $result["regexp"] = [
+                    $query->getField() => $query->getQuery()
+                ];
+                break;
+
+            case "wildcard":
+                $result["wildcard"] = [
+                    $query->getField() => $query->getQuery()
+                ];
+                break;
+            
             case "constant_score":
                 $result["constant_score"] = $this->processQuery($query->getFilter());
                 break;

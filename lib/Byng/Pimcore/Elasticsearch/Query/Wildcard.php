@@ -14,13 +14,13 @@
 namespace Byng\Pimcore\Elasticsearch\Query;
 
 /**
- * Prefix Query
+ * Wildcard Query
  *
- * Allows to do prefix queries
+ * Allows to do wildcard queries
  *
  * @author Asim Liaquat <asimlqt22@gmail.com>
  */
-final class Prefix implements QueryInterface
+final class Wildcard implements QueryInterface
 {
 
     /**
@@ -34,7 +34,7 @@ final class Prefix implements QueryInterface
     private $query;
 
     /**
-     * Prefix constructor.
+     * Wildcard constructor.
      *
      * @param string $field
      * @param string $query
@@ -70,7 +70,7 @@ final class Prefix implements QueryInterface
      */
     public function getType()
     {
-        return "prefix";
+        return "wildcard";
     }
     
 }

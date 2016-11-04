@@ -14,13 +14,13 @@
 namespace Byng\Pimcore\Elasticsearch\Query;
 
 /**
- * Prefix Query
+ * Regexp Query
  *
- * Allows to do prefix queries
+ * Allows to do regexp queries
  *
  * @author Asim Liaquat <asimlqt22@gmail.com>
  */
-final class Prefix implements QueryInterface
+final class Regexp implements QueryInterface
 {
 
     /**
@@ -34,7 +34,7 @@ final class Prefix implements QueryInterface
     private $query;
 
     /**
-     * Prefix constructor.
+     * Regexp constructor.
      *
      * @param string $field
      * @param string $query
@@ -70,7 +70,7 @@ final class Prefix implements QueryInterface
      */
     public function getType()
     {
-        return "prefix";
+        return "regexp";
     }
     
 }
