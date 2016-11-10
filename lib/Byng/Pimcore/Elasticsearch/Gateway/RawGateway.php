@@ -123,6 +123,27 @@ final class RawGateway extends AbstractGateway implements RawGatewayInterface
     }
 
     /**
+     * Get a document by it's id
+     *
+     * @param string $index
+     * @param string $type
+     * @param int    $id
+     *
+     * @return array
+     */
+    public function get($index, $type, $id)
+    {
+        $params = [
+            "id" => $id,
+            "index" => $index,
+            "type" => $type
+        ];
+
+        return $this->client->get($params);
+    }
+
+    
+    /**
      * Delete from index
      *
      * @param string $index

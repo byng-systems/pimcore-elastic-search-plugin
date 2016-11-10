@@ -37,6 +37,13 @@ interface RawGatewayInterface
     /**
      * @param string $index
      * @param string $type
+     * @param int    $id
+     */
+    public function get($index, $type, $id);
+    
+    /**
+     * @param string $index
+     * @param string $type
      * @param int $id
      */
     public function delete($index, $type, $id);
