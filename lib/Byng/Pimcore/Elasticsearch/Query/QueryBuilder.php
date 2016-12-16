@@ -214,6 +214,10 @@ class QueryBuilder
             case "bool":
                 $boolResult = [];
 
+                if ($boolFilter = $query->getFilter()) {
+                    $boolResult["filter"] = $this->processQuery($boolFilter);
+                }
+                
                 foreach ($query->getMust() as $must) {
                     $boolResult["must"][] = $this->processQuery($must);
                 }

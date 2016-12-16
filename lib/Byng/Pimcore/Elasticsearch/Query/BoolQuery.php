@@ -38,6 +38,8 @@ final class BoolQuery implements QueryInterface
      */
     private $mustNot = [];
 
+    private $filter;
+    
     /**
      * BoolQuery constructor.
      *
@@ -85,6 +87,11 @@ final class BoolQuery implements QueryInterface
         return $this->mustNot;
     }
 
+    public function getFilter()
+    {
+        return $this->filter;
+    }
+    
     /**
      * Add a "must" clause
      * 
@@ -124,6 +131,12 @@ final class BoolQuery implements QueryInterface
         return $this;
     }
 
+    public function addFilter(QueryInterface $filter)
+    {
+        $this->filter = $filter;
+        return $this;
+    }
+    
     /**
      * Resets all data which has been added
      * 
