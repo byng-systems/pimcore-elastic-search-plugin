@@ -41,6 +41,10 @@ final class MatchQuery implements QueryInterface
      */
     private $operator;
 
+    /**
+     * @var int
+     */
+    private $boost;
 
     /**
      * MatchQuery constructor.
@@ -48,12 +52,14 @@ final class MatchQuery implements QueryInterface
      * @param string       $field
      * @param string|array $query
      * @param string       $operator
+     * @param int          $boost
      */
-    public function __construct($field, $query, $operator = null)
+    public function __construct($field, $query, $operator = null, $boost = null)
     {
         $this->field = $field;
         $this->query = $query;
         $this->operator = $operator;
+        $this->boost = $boost;
 
         if ($operator !== null) {
             switch ($this->operator) {
@@ -97,6 +103,16 @@ final class MatchQuery implements QueryInterface
     public function getOperator()
     {
         return $this->operator;
+    }
+
+    /**
+     * Get boost
+     *
+      @return int
+     */
+    public function getBoost()
+    {
+        return $this->boost;
     }
 
     /**
