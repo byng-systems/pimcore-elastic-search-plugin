@@ -42,15 +42,15 @@ abstract class AbstractGateway
         array $resultOptions = []
     ) {
         $body = [];
-        
+
         if ($query = $queryBuilder->getQuery()) {
             $body = $this->processQuery($query);
         }
-        
+
         if ($filter = $queryBuilder->getFilter()) {
             $body = array_merge($body, $this->processQuery($filter));
         }
-        
+
         if ($from = $queryBuilder->getFrom()) {
             $body["from"] = $from;
         }
@@ -58,11 +58,11 @@ abstract class AbstractGateway
         if ($size = $queryBuilder->getSize()) {
             $body["size"] = $size;
         }
-        
+
         if ($sort = $queryBuilder->getSort()) {
             $body["sort"] = $this->processQuery($sort);
         }
-        
+
         return $this->findBy(
             $body,
             $additionalOptions,
@@ -104,7 +104,7 @@ abstract class AbstractGateway
         $additionalOptions = []
     ) {
         $body = $additionalOptions + $query;
-        
+
         return $client->search([
             "index" => $index,
             "type" => $type,
@@ -122,15 +122,15 @@ abstract class AbstractGateway
     protected function processQuery(QueryInterface $query)
     {
         switch ($query->getType()) {
-            
+
             case "query":
                 $result["query"] = $this->processQuery($query->getBoolQuery());
                 break;
-            
+
             case "filter":
                 $result["filter"] = $this->processQuery($query->getQuery());
                 break;
-            
+
             case "bool":
                 $boolResult = [];
 
@@ -150,25 +150,30 @@ abstract class AbstractGateway
                 $result["bool"] = $boolResult;
 
                 break;
-                
+
             case "match":
                 $result = [];
-                
+
                 if ($operator = $query->getOperator()) {
                     $result["match"][$query->getField()] = [
                         "query" => $query->getQuery(),
                         "operator" => $operator
                     ];
+                } else if ($boost = $query->getBoost()) {
+                    $result["match"][$query->getField()] = [
+                        "query" => $query->getQuery(),
+                        "boost" => $boost
+                    ];
                 } else {
                     $result["match"][$query->getField()] = $query->getQuery();
                 }
                 break;
-                
+
             case "range":
                 $result = [];
                 $result["range"][$query->getField()] = $query->getRanges();
                 break;
-            
+
             case "sort":
                 $result = [];
                 foreach ($query->getCriteria() as $column => $order) {
@@ -187,7 +192,7 @@ abstract class AbstractGateway
                     $query->getField() => $query->getQuery()
                 ];
                 break;
-            
+
             case "regexp":
                 $result["regexp"] = [
                     $query->getField() => $query->getQuery()
@@ -199,18 +204,18 @@ abstract class AbstractGateway
                     $query->getField() => $query->getQuery()
                 ];
                 break;
-            
+
             case "constant_score":
                 $result["constant_score"] = $this->processQuery($query->getFilter());
                 break;
-            
+
             case "nested":
                 $result["nested"] = [
                     "path" => $query->getPath(),
                     "query" => $this->processQuery($query->getQuery())
                 ];
                 break;
-            
+
             default:
                 throw new \InvalidArgumentException(sprintf(
                     "Unknown query type '%s' given.",
