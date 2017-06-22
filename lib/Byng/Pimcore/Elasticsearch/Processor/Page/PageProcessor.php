@@ -108,6 +108,7 @@ final class PageProcessor
     ) {
         switch (ltrim(get_class($element), "\\")) {
             case "Document_Tag_Select":
+            case "Pimcore\Model\Document\Tag\Select":
                 /** @var Tag\Select $element */
                 $this->selectElementProcessor->processElement(
                     $body,
@@ -117,6 +118,7 @@ final class PageProcessor
                 return;
 
             case "Document_Tag_Multiselect":
+            case "Pimcore\Model\Document\Tag\Multiselect":
                 /** @var Tag\Multiselect $element */
                 $this->selectElementProcessor->processMultiSelectElement(
                     $body,
@@ -126,11 +128,11 @@ final class PageProcessor
                 return;
 
             case "Document_Tag_Date":
+            case "Pimcore\Model\Document\Tag\Date":
                 /** @var Tag\Date $element */
                 $body[$elementKey] = $this->dateElementProcessor->processElement($element);
                 return;
 
-            case "Document_Tag":
             default:
                 $body[$elementKey] = $this->elementProcessor->processElement($element);
                 return;
