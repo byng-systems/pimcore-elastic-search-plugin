@@ -16,7 +16,7 @@ namespace Byng\Pimcore\Elasticsearch\Query;
 use Byng\Pimcore\Elasticsearch\Query\QueryInterface;
 
 /**
- * 
+ *
  * QueryBuilder defines the query to send to elasticsearch.
  *
  * @author Asim Liaquat <asimlqt22@gmail.com>
@@ -27,12 +27,12 @@ class QueryBuilder
      * @var Query
      */
     private $query;
-    
+
     /**
      * @var Filter
      */
     private $filter;
-    
+
     /**
      * @var int
      */
@@ -42,15 +42,15 @@ class QueryBuilder
      * @var int
      */
     private $from;
-    
+
     /**
      * @var Sort
      */
     private $sort;
-    
+
     /**
      * QueryBuilder constructor
-     * 
+     *
      * @param Query  $query
      * @param Filter $filter
      */
@@ -62,7 +62,7 @@ class QueryBuilder
 
     /**
      * Get query
-     * 
+     *
      * @return Query
      */
     public function getQuery()
@@ -72,7 +72,7 @@ class QueryBuilder
 
     /**
      * Get filter
-     * 
+     *
      * @return Filter
      */
     public function getFilter()
@@ -82,7 +82,7 @@ class QueryBuilder
 
     /**
      * Set query
-     * 
+     *
      * @param Query $query
      */
     public function setQuery(Query $query)
@@ -92,7 +92,7 @@ class QueryBuilder
 
     /**
      * Set filter
-     * 
+     *
      * @param Filter $filter
      */
     public function setFilter(Filter $filter)
@@ -102,7 +102,7 @@ class QueryBuilder
 
     /**
      * Get the number or results to return
-     * 
+     *
      * @return int
      */
     public function getSize()
@@ -112,7 +112,7 @@ class QueryBuilder
 
     /**
      * Set the number of results to return
-     * 
+     *
      * @param int $size
      */
     public function setSize($size)
@@ -122,7 +122,7 @@ class QueryBuilder
 
     /**
      * Get the offset to fetch the results from
-     * 
+     *
      * @return int|null
      */
     public function getFrom()
@@ -132,7 +132,7 @@ class QueryBuilder
 
     /**
      * Set the offset to fetch the results from
-     * 
+     *
      * @param int $from
      */
     public function setFrom($from)
@@ -142,7 +142,7 @@ class QueryBuilder
 
     /**
      * Get sort criteria
-     * 
+     *
      * @return Sort
      */
     public function getSort()
@@ -152,7 +152,7 @@ class QueryBuilder
 
     /**
      * Set sort criteria
-     * 
+     *
      * @param Sort $sort
      */
     public function setSort(Sort $sort)
@@ -168,15 +168,15 @@ class QueryBuilder
     public function toArray()
     {
         $body = [];
-        
+
         if ($query = $this->getQuery()) {
             $body = $this->processQuery($query);
         }
-        
+
         if ($filter = $this->getFilter()) {
             $body = array_merge($body, $this->processQuery($filter));
         }
-        
+
         if ($from = $this->getFrom()) {
             $body["from"] = $from;
         }
@@ -184,11 +184,11 @@ class QueryBuilder
         if ($size = $this->getSize()) {
             $body["size"] = $size;
         }
-        
+
         if ($sort = $this->getSort()) {
             $body["sort"] = $this->processQuery($sort);
         }
-        
+
         return $body;
     }
 
@@ -202,15 +202,15 @@ class QueryBuilder
     protected function processQuery(QueryInterface $query)
     {
         switch ($query->getType()) {
-            
+
             case "query":
                 $result["query"] = $this->processQuery($query->getBoolQuery());
                 break;
-            
+
             case "filter":
                 $result["filter"] = $this->processQuery($query->getQuery());
                 break;
-            
+
             case "bool":
                 $boolResult = [];
 
@@ -230,10 +230,10 @@ class QueryBuilder
                 $result["bool"] = $boolResult;
 
                 break;
-                
+
             case "match":
                 $result = [];
-                
+
                 if ($operator = $query->getOperator()) {
                     $result["match"][$query->getField()] = [
                         "query" => $query->getQuery(),
@@ -243,16 +243,16 @@ class QueryBuilder
                     $result["match"][$query->getField()] = $query->getQuery();
                 }
                 break;
-                
+
             case "range":
                 $result = [];
                 $result["range"][$query->getField()] = $query->getRanges();
                 break;
-            
+
             case "sort":
                 $result = [];
-                foreach ($query->getCriteria() as $column => $order) {
-                    $result[$column]["order"] = $order;
+                foreach ($query->getCriteria() as $sorting) {
+                    $result[] = $sorting;
                 }
                 break;
 
@@ -261,7 +261,7 @@ class QueryBuilder
                     $query->getField() => $query->getTerms()
                 ];
                 break;
-            
+
             case "prefix":
                 $result["prefix"] = [
                     $query->getField() => $query->getQuery()
@@ -279,18 +279,18 @@ class QueryBuilder
                     $query->getField() => $query->getQuery()
                 ];
                 break;
-            
+
             case "constant_score":
                 $result["constant_score"] = $this->processQuery($query->getFilter());
                 break;
-            
+
             case "nested":
                 $result["nested"] = [
                     "path" => $query->getPath(),
                     "query" => $this->processQuery($query->getQuery())
                 ];
                 break;
-            
+
             default:
                 throw new \InvalidArgumentException(sprintf(
                     "Unknown query type '%s' given.",

@@ -37,25 +37,36 @@ class Sort implements QueryInterface
     /**
      * Add a sorting criteria. Can be called multiple times to sort by more than
      * one column.
-     * 
+     *
      * @param string $column
      * @param string $order
+     * @param mixed  $unmappedType
      */
-    public function addCriteria($column, $order)
+    public function addCriteria($column, $order, $unmappedType = false)
     {
-        $this->data[$column] = $order;
+        $sort = [
+            "order" => $order
+        ];
+
+        if ($unmappedType) {
+            $sort["unmapped_type"] = $unmappedType;
+        }
+
+        $this->data[] = [
+            $column => $sort
+        ];
     }
-    
+
     /**
      * Get sort criteria
-     * 
+     *
      * @return array
      */
     public function getCriteria()
     {
         return $this->data;
     }
-    
+
     /**
      * Resets the previously added criteria
      */
@@ -63,7 +74,7 @@ class Sort implements QueryInterface
     {
         $this->data = [];
     }
-    
+
     /**
      * {@inheritdoc}
      */
