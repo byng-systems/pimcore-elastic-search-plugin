@@ -176,8 +176,8 @@ abstract class AbstractGateway
 
             case "sort":
                 $result = [];
-                foreach ($query->getCriteria() as $column => $order) {
-                    $result[$column]["order"] = $order;
+                foreach ($query->getCriteria() as $sorting) {
+                    $result[] = $sorting;
                 }
                 break;
 
