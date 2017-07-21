@@ -187,6 +187,13 @@ abstract class AbstractGateway
                 ];
                 break;
 
+            case "ids":
+                $result["ids"] = [
+                    "type" => $query->getIndexType(),
+                    "values" => $query->getValues()
+                ];
+                break;
+
             case "prefix":
                 $result["prefix"] = [
                     $query->getField() => $query->getQuery()
