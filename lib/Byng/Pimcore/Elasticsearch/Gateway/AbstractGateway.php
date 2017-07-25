@@ -63,6 +63,10 @@ abstract class AbstractGateway
             $body["sort"] = $this->processQuery($sort);
         }
 
+        if (is_array($fields = $queryBuilder->getFields())) {
+            $body["fields"] = $fields;
+        }
+
         return $this->findBy(
             $body,
             $additionalOptions,

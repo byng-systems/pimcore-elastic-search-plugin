@@ -184,12 +184,6 @@ final class AssetGateway extends AbstractGateway
         array $additionalOptions = [],
         array $resultOptions = []
     ) {
-        $additionalOptions = array_merge($additionalOptions, [
-            "_source" => [
-                "exclude" => [ "*.content" ]
-            ]
-        ]);
-
         $result = $this->doSearch(
             $this->client,
             $this->index,
@@ -208,7 +202,7 @@ final class AssetGateway extends AbstractGateway
         // TODO optimize to use list
         foreach ($result["hits"]["hits"] as $page) {
             $id = (int) $page["_id"];
-            
+
             if (($asset = Asset::getById($id)) instanceof Asset) {
                 if (isset($resultOptions["raw"]) && $resultOptions["raw"] === true) {
                     $assets[] = $page;
