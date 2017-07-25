@@ -49,6 +49,11 @@ class QueryBuilder
     private $sort;
 
     /**
+     * @var array
+     */
+    private $fields;
+
+    /**
      * QueryBuilder constructor
      *
      * @param Query  $query
@@ -121,6 +126,22 @@ class QueryBuilder
     }
 
     /**
+     * @return array|null
+     */
+    public function getFields()
+    {
+        return $this->fields;
+    }
+
+    /**
+     * @param array|null $fields
+     */
+    public function setFields($fields)
+    {
+        $this->fields = $fields;
+    }
+
+    /**
      * Get the offset to fetch the results from
      *
      * @return int|null
@@ -187,6 +208,10 @@ class QueryBuilder
 
         if ($sort = $this->getSort()) {
             $body["sort"] = $this->processQuery($sort);
+        }
+
+        if (is_array($this->fields)) {
+            $body["fields"] = $this->fields;
         }
 
         return $body;
