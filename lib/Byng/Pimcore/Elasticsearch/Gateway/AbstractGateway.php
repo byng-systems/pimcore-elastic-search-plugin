@@ -151,7 +151,7 @@ abstract class AbstractGateway
                 }
 
                 if ($filter = $query->getFilter()) {
-                    $boolResult = $this->processQuery($filter);
+                    $boolResult["filter"] = $this->processQuery($filter)["filter"];
                 }
 
                 $result = [];
