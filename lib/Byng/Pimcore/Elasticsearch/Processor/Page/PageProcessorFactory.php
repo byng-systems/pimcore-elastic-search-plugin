@@ -14,10 +14,10 @@
 namespace Byng\Pimcore\Elasticsearch\Processor\Page;
 
 use Byng\Pimcore\Elasticsearch\Filter\FilterInterface;
-use Byng\Pimcore\Elasticsearch\Filter\TagKeyFilter;
 use Byng\Pimcore\Elasticsearch\Processor\Element\DateElementProcessor;
 use Byng\Pimcore\Elasticsearch\Processor\Element\ElementProcessor;
 use Byng\Pimcore\Elasticsearch\Processor\Element\SelectElementProcessor;
+use Byng\Pimcore\Elasticsearch\Processor\Element\InputElementProcessor;
 use NF\HtmlToText;
 
 /**
@@ -38,14 +38,13 @@ final class PageProcessorFactory
     public function build(FilterInterface $filter = null)
     {
         $elementProcessor = new ElementProcessor(new HtmlToText());
+        $inputProcessor = new InputElementProcessor();
 
         return new PageProcessor(
             $elementProcessor,
             new DateElementProcessor(),
-            new SelectElementProcessor(
-                ($filter ?: new TagKeyFilter()),
-                $elementProcessor
-            )
+            new SelectElementProcessor($inputProcessor),
+            $inputProcessor
         );
     }
 }

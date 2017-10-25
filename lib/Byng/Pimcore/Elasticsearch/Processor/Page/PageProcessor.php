@@ -16,6 +16,7 @@ namespace Byng\Pimcore\Elasticsearch\Processor\Page;
 use Byng\Pimcore\Elasticsearch\Processor\Element\DateElementProcessor;
 use Byng\Pimcore\Elasticsearch\Processor\Element\ElementProcessor;
 use Byng\Pimcore\Elasticsearch\Processor\Element\SelectElementProcessor;
+use Byng\Pimcore\Elasticsearch\Processor\Element\InputElementProcessor;
 use Byng\Pimcore\Elasticsearch\Processor\ProcessorException;
 use Pimcore\Model\Document\Page;
 use Pimcore\Model\Document\Tag;
@@ -43,22 +44,29 @@ final class PageProcessor
      */
     private $selectElementProcessor;
 
+    /**
+     * @var InputElementProcessor
+     */
+    private $inputElementProcessor;
 
     /**
      * Constructor
      *
-     * @param ElementProcessor $elementProcessor
-     * @param DateElementProcessor $dateElementProcessor
+     * @param ElementProcessor       $elementProcessor
+     * @param DateElementProcessor   $dateElementProcessor
      * @param SelectElementProcessor $selectElementProcessor
+     * @param InputElementProcessor  $inputElementProcessor
      */
     public function __construct(
         ElementProcessor $elementProcessor,
         DateElementProcessor $dateElementProcessor,
-        SelectElementProcessor $selectElementProcessor
+        SelectElementProcessor $selectElementProcessor,
+        InputElementProcessor $inputElementProcessor
     ) {
         $this->elementProcessor = $elementProcessor;
         $this->dateElementProcessor = $dateElementProcessor;
         $this->selectElementProcessor = $selectElementProcessor;
+        $this->inputElementProcessor = $inputElementProcessor;
     }
 
     /**
@@ -131,6 +139,12 @@ final class PageProcessor
             case "Pimcore\Model\Document\Tag\Date":
                 /** @var Tag\Date $element */
                 $body[$elementKey] = $this->dateElementProcessor->processElement($element);
+                return;
+
+            case "Document_Tag_Input":
+            case "Pimcore\Model\Document\Tag\Input":
+                /** @var Tag\Input $element */
+                $body[$elementKey] = $this->inputElementProcessor->processElement($element);
                 return;
 
             default:
