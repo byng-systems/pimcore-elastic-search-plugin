@@ -44,8 +44,7 @@ final class InputElementProcessor
         if (is_numeric($val)) {
             if (preg_match("/^[0-9]+$/", abs($val))) {
                 return (int) $val;
-            }
-            else {
+            } else {
                 return (float) $val;
             }
         }
