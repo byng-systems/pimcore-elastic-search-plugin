@@ -8,6 +8,12 @@ The Elasticsearch plugin for Pimcore Saves/updates contents (text only) of docum
 * Hooks to add custom properties to the index.
 * A simple query builder to retrieve indexed documents. Supports querying, filtering, sorting and pagination.
 
+## System Requirements
+
+* PHP - 5.6+
+* Elasticsearch - 1.7+
+* Pimcore - 3, 4 (not tested on 5 yet)
+
 ## Installation via composer
 
 The recommended method to install the Pimcore Elasticsearch Plugin is via [Composer](https://getcomposer.org/).
