@@ -86,10 +86,31 @@ final class BoolQuery implements QueryInterface
     }
 
     /**
+     *
+     * @return Filter|null
+     */
+    public function getFilter()
+    {
+        return $this->filter;
+    }
+
+    /**
+     *
+     * @param Filter $filter
+     *
+     * @return $this
+     */
+    public function addFilter(Filter $filter)
+    {
+        $this->filter = $filter;
+        return $this;
+    }
+
+    /**
      * Add a "must" clause
-     * 
+     *
      * @param QueryInterface $must
-     * 
+     *
      * @return BoolQuery
      */
     public function addMust(QueryInterface $must)
@@ -100,9 +121,9 @@ final class BoolQuery implements QueryInterface
 
     /**
      * Add a "should" clause
-     * 
+     *
      * @param QueryInterface $should
-     * 
+     *
      * @return BoolQuery
      */
     public function addShould(QueryInterface $should)
@@ -113,9 +134,9 @@ final class BoolQuery implements QueryInterface
 
     /**
      * Add a "must_not"
-     * 
+     *
      * @param QueryInterface $mustNot
-     * 
+     *
      * @return BoolQuery
      */
     public function addMustNot(QueryInterface $mustNot)
@@ -126,7 +147,7 @@ final class BoolQuery implements QueryInterface
 
     /**
      * Resets all data which has been added
-     * 
+     *
      * @return void
      */
     public function clear()
@@ -135,19 +156,19 @@ final class BoolQuery implements QueryInterface
         $this->mustNot = [];
         $this->should = [];
     }
-    
+
     /**
      * Checkls whether any "must", "must_not" or "should" claues have been added.
-     * 
+     *
      * @return bool
      */
     public function isEmpty()
     {
-        return count($this->must) === 0 
+        return count($this->must) === 0
             && count($this->mustNot) === 0
             && count($this->should) === 0;
     }
-    
+
     /**
      * {@inheritdoc}
      */

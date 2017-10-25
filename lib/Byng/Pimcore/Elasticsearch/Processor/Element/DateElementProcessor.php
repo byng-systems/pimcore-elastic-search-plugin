@@ -32,6 +32,6 @@ final class DateElementProcessor
      */
     public function processElement(Date $tag)
     {
-        return (string) $tag->getDataForResource();
+        return (int) $tag->getDataForResource();
     }
 }

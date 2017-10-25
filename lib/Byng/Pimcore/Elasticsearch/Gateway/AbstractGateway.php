@@ -150,6 +150,10 @@ abstract class AbstractGateway
                     $boolResult["must_not"][] = $this->processQuery($mustNot);
                 }
 
+                if ($filter = $query->getFilter()) {
+                    $boolResult["filter"] = $this->processQuery($filter)["filter"];
+                }
+
                 $result = [];
                 $result["bool"] = $boolResult;
 
