@@ -16,6 +16,8 @@ namespace Byng\Pimcore\Elasticsearch\Processor\Element;
 use Pimcore\Model\Document\Tag\Multiselect;
 use Pimcore\Model\Document\Tag\Select;
 use Pimcore\Model\Document\Tag\Input;
+use Byng\Pimcore\Elasticsearch\Filter\FilterInterface;
+use Pimcore\Model\Object\AbstractObject;
 
 /**
  * Select Element Processor
@@ -26,6 +28,11 @@ use Pimcore\Model\Document\Tag\Input;
 final class SelectElementProcessor
 {
     /**
+     * @var FilterInterface
+     */
+    protected $filter;
+    
+    /**
      * @var InputElementProcessor
      */
     private $fallbackProcessor;
@@ -34,10 +41,12 @@ final class SelectElementProcessor
     /**
      * Constructor
      *
+     * @param FilterInterface $filter
      * @param InputElementProcessor $fallbackProcessor
      */
-    public function __construct(InputElementProcessor $fallbackProcessor)
+    public function __construct(FilterInterface $filter, InputElementProcessor $fallbackProcessor)
     {
+        $this->filter = $filter;
         $this->fallbackProcessor = $fallbackProcessor;
     }
 
@@ -57,9 +66,22 @@ final class SelectElementProcessor
     ) {
         $elementData = trim($select->getData());
 
+        if (
+            is_numeric(($elementData = trim($elementData)))
+            && ($object = AbstractObject::getById($elementData)) instanceof AbstractObject
+        ) {
+            $rawElementData = $object->getKey();
+
+            $body[$key] = [
+                $elementData,
+                $this->filter->filter($rawElementData)
+            ];
+
+            return ($body[$key . '-collated'] = $rawElementData);
+        }
+
         $input = new Input();
         $input->text = $elementData;
-
         return $body[$key] = $this->fallbackProcessor->processElement($input);
     }
 
