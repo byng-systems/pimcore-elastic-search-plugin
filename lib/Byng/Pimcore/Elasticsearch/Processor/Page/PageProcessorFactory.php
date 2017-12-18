@@ -43,7 +43,7 @@ final class PageProcessorFactory
         return new PageProcessor(
             $elementProcessor,
             new DateElementProcessor(),
-            new SelectElementProcessor($inputProcessor),
+            new SelectElementProcessor($filter, $inputProcessor),
             $inputProcessor
         );
     }
