@@ -18,6 +18,8 @@ use Byng\Pimcore\Elasticsearch\Processor\Element\DateElementProcessor;
 use Byng\Pimcore\Elasticsearch\Processor\Element\ElementProcessor;
 use Byng\Pimcore\Elasticsearch\Processor\Element\SelectElementProcessor;
 use Byng\Pimcore\Elasticsearch\Processor\Element\InputElementProcessor;
+use Byng\Pimcore\Elasticsearch\Processor\Element\HrefElementProcessor;
+use Byng\Pimcore\Elasticsearch\Processor\Element\ObjectTagProcessor;
 use NF\HtmlToText;
 
 /**
@@ -44,7 +46,8 @@ final class PageProcessorFactory
             $elementProcessor,
             new DateElementProcessor(),
             new SelectElementProcessor($filter, $inputProcessor),
-            $inputProcessor
+            $inputProcessor,
+            new HrefElementProcessor(new ObjectTagProcessor(), $filter)
         );
     }
 }

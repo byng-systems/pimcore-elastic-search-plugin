@@ -17,6 +17,7 @@ use Byng\Pimcore\Elasticsearch\Processor\Element\DateElementProcessor;
 use Byng\Pimcore\Elasticsearch\Processor\Element\ElementProcessor;
 use Byng\Pimcore\Elasticsearch\Processor\Element\SelectElementProcessor;
 use Byng\Pimcore\Elasticsearch\Processor\Element\InputElementProcessor;
+use Byng\Pimcore\Elasticsearch\Processor\Element\HrefElementProcessor;
 use Byng\Pimcore\Elasticsearch\Processor\ProcessorException;
 use Pimcore\Model\Document\Page;
 use Pimcore\Model\Document\Tag;
@@ -50,23 +51,31 @@ final class PageProcessor
     private $inputElementProcessor;
 
     /**
+     * @var HrefElementProcessor
+     */
+    protected $hrefElementProcessor;
+    
+    /**
      * Constructor
      *
      * @param ElementProcessor       $elementProcessor
      * @param DateElementProcessor   $dateElementProcessor
      * @param SelectElementProcessor $selectElementProcessor
      * @param InputElementProcessor  $inputElementProcessor
+     * @param HrefElementProcessor   $hrefElementProcessor
      */
     public function __construct(
         ElementProcessor $elementProcessor,
         DateElementProcessor $dateElementProcessor,
         SelectElementProcessor $selectElementProcessor,
-        InputElementProcessor $inputElementProcessor
+        InputElementProcessor $inputElementProcessor,
+        HrefElementProcessor $hrefElementProcessor
     ) {
         $this->elementProcessor = $elementProcessor;
         $this->dateElementProcessor = $dateElementProcessor;
         $this->selectElementProcessor = $selectElementProcessor;
         $this->inputElementProcessor = $inputElementProcessor;
+        $this->hrefElementProcessor = $hrefElementProcessor;
     }
 
     /**
@@ -115,6 +124,15 @@ final class PageProcessor
         Tag $element
     ) {
         switch (ltrim(get_class($element), "\\")) {
+            case 'Document_Tag_Multihref':
+            case Tag\Multihref::class:
+                $this->hrefElementProcessor->processElement(
+                    $body,
+                    $elementKey,
+                    $element
+                );
+                return;
+                
             case "Document_Tag_Select":
             case "Pimcore\Model\Document\Tag\Select":
                 /** @var Tag\Select $element */
