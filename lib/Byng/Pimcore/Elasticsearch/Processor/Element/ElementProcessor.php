@@ -14,7 +14,6 @@
 namespace Byng\Pimcore\Elasticsearch\Processor\Element;
 
 use Byng\Pimcore\Elasticsearch\Processor\ProcessorException;
-use NF\HtmlToText;
 use Pimcore\Model\Document\Tag;
 
 /**
@@ -25,22 +24,6 @@ use Pimcore\Model\Document\Tag;
  */
 final class ElementProcessor
 {
-    /**
-     * @var HtmlToText
-     */
-    private $htmlToTextFilter;
-
-
-    /**
-     * Constructor
-     *
-     * @param HtmlToText $htmlToTextFilter
-     */
-    public function __construct(HtmlToText $htmlToTextFilter)
-    {
-        $this->htmlToTextFilter = $htmlToTextFilter;
-    }
-
     /**
      * Process a generic element
      *
@@ -60,7 +43,6 @@ final class ElementProcessor
             );
         }
 
-        // This needs to be handled much more elegantly than with the error suppression operator
-        return @$this->htmlToTextFilter->convert($elementData);
+        return strip_tags($elementData);
     }
 }

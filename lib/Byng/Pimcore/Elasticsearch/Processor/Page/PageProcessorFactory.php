@@ -18,7 +18,6 @@ use Byng\Pimcore\Elasticsearch\Filter\TagKeyFilter;
 use Byng\Pimcore\Elasticsearch\Processor\Element\DateElementProcessor;
 use Byng\Pimcore\Elasticsearch\Processor\Element\ElementProcessor;
 use Byng\Pimcore\Elasticsearch\Processor\Element\SelectElementProcessor;
-use NF\HtmlToText;
 
 /**
  * PageProcessor Factory
@@ -37,7 +36,7 @@ final class PageProcessorFactory
      */
     public function build(FilterInterface $filter = null)
     {
-        $elementProcessor = new ElementProcessor(new HtmlToText());
+        $elementProcessor = new ElementProcessor();
 
         return new PageProcessor(
             $elementProcessor,
